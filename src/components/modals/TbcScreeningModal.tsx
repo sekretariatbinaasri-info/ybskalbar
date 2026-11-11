@@ -75,7 +75,7 @@ export const TbcScreeningModal: React.FC<TbcScreeningModalProps> = ({ isOpen, on
   const hasContact = answers['kontakserumah'];
   const isHighRisk = hasMainSymptom || yesCount >= 2;
 
-  const waNumber = (kontenWeb.wa_number || '6282152191199').replace(/[^0-9]/g, '');
+  const waNumber = (kontenWeb.wa_number || '6281320420906').replace(/[^0-9]/g, '');
   const waConsultMessage = encodeURIComponent(
     `Assalamu'alaikum Yayasan Bina Asri, saya telah melakukan Skrining Mandiri TBC dengan hasil ${
       isHighRisk ? 'Terduga Berisiko TBC' : 'Gejala Ringan'

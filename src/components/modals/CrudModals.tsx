@@ -1121,6 +1121,55 @@ export const QuickEditSectionModal: React.FC<QuickEditModalProps> = ({ type, sec
                   />
                 </div>
               </div>
+
+              {/* Tautan Media Sosial Resmi */}
+              <div className="pt-3 border-t border-slate-200">
+                <h4 className="text-xs font-bold uppercase tracking-wider text-emerald-800 mb-2">
+                  🌐 Tautan Media Sosial Resmi
+                </h4>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 mb-1">YouTube URL</label>
+                    <input
+                      type="url"
+                      value={formState.social_youtube || ''}
+                      onChange={(e) => update('social_youtube', e.target.value)}
+                      placeholder="https://www.youtube.com/@yayasanbinaasrikalbar"
+                      className="w-full px-3 py-2 rounded-xl border text-sm"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 mb-1">Instagram URL</label>
+                    <input
+                      type="url"
+                      value={formState.social_instagram || ''}
+                      onChange={(e) => update('social_instagram', e.target.value)}
+                      placeholder="https://www.instagram.com/yayasanbinaasri"
+                      className="w-full px-3 py-2 rounded-xl border text-sm"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 mb-1">Facebook URL</label>
+                    <input
+                      type="url"
+                      value={formState.social_facebook || ''}
+                      onChange={(e) => update('social_facebook', e.target.value)}
+                      placeholder="https://www.facebook.com/yayasanbinaasrikalbar"
+                      className="w-full px-3 py-2 rounded-xl border text-sm"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 mb-1">TikTok URL</label>
+                    <input
+                      type="url"
+                      value={formState.social_tiktok || ''}
+                      onChange={(e) => update('social_tiktok', e.target.value)}
+                      placeholder="https://www.tiktok.com/@yayasanbinaasri"
+                      className="w-full px-3 py-2 rounded-xl border text-sm"
+                    />
+                  </div>
+                </div>
+              </div>
             </>
           )}
 

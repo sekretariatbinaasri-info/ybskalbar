@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useFoundation } from '../context/FoundationContext';
 import { EditableText } from './EditableText';
 import { Menu, X, MessageSquare } from 'lucide-react';
+import { SocialMediaBar } from './common/SocialMediaBar';
 
 interface HeaderNavbarProps {
   onOpenAdminLogin: () => void;
@@ -248,6 +249,11 @@ export const HeaderNavbar: React.FC<HeaderNavbarProps> = ({ onOpenAdminLogin }) 
             >
               Hubungi Sekretariat Yayasan
             </button>
+
+            <div className="pt-3.5 border-t border-slate-100 flex flex-col items-center gap-2">
+              <span className="text-xs font-semibold text-slate-500">Media Sosial Resmi:</span>
+              <SocialMediaBar variant="navbar" />
+            </div>
           </div>
         </div>
       )}

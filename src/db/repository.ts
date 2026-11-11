@@ -84,6 +84,31 @@ function ensureDbLoaded(): DatabaseSchema {
       if (kontenMerged.footer_copyright && kontenMerged.footer_copyright.includes('Provinsi')) {
         kontenMerged.footer_copyright = kontenMerged.footer_copyright.replace(/Provinsi\s*/gi, '').trim();
       }
+      if (!kontenMerged.top_address || kontenMerged.top_address.includes('Hamka') || kontenMerged.top_address.includes('Nilam')) {
+        kontenMerged.top_address = DEFAULT_KONTEN_WEB.top_address;
+      }
+      if (!kontenMerged.kontak_alamat || kontenMerged.kontak_alamat.includes('Hamka') || kontenMerged.kontak_alamat.includes('Nilam')) {
+        kontenMerged.kontak_alamat = DEFAULT_KONTEN_WEB.kontak_alamat;
+      }
+      if (!kontenMerged.top_email || kontenMerged.top_email.includes('yayasanbinaasrikalbar@gmail.com')) {
+        kontenMerged.top_email = DEFAULT_KONTEN_WEB.top_email;
+      }
+      if (!kontenMerged.kontak_email || kontenMerged.kontak_email.includes('yayasanbinaasrikalbar@gmail.com')) {
+        kontenMerged.kontak_email = DEFAULT_KONTEN_WEB.kontak_email;
+      }
+      if (!kontenMerged.top_phone || kontenMerged.top_phone === '0821-5219-1199') {
+        kontenMerged.top_phone = DEFAULT_KONTEN_WEB.top_phone;
+      }
+      if (!kontenMerged.kontak_telepon || kontenMerged.kontak_telepon === '0821-5219-1199') {
+        kontenMerged.kontak_telepon = DEFAULT_KONTEN_WEB.kontak_telepon;
+      }
+      if (!kontenMerged.wa_number || kontenMerged.wa_number === '6282152191199' || kontenMerged.wa_number === '6281256789012') {
+        kontenMerged.wa_number = DEFAULT_KONTEN_WEB.wa_number;
+      }
+      if (!kontenMerged.social_youtube) kontenMerged.social_youtube = DEFAULT_KONTEN_WEB.social_youtube;
+      if (!kontenMerged.social_instagram) kontenMerged.social_instagram = DEFAULT_KONTEN_WEB.social_instagram;
+      if (!kontenMerged.social_facebook) kontenMerged.social_facebook = DEFAULT_KONTEN_WEB.social_facebook;
+      if (!kontenMerged.social_tiktok) kontenMerged.social_tiktok = DEFAULT_KONTEN_WEB.social_tiktok;
       inMemoryDb = {
         kontenWeb: kontenMerged,
         berita: Array.isArray(parsed.berita) && parsed.berita.length > 0 ? parsed.berita : [...DEFAULT_BERITA],

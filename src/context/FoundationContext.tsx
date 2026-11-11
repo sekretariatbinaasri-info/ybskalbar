@@ -103,8 +103,45 @@ interface FoundationContextType {
   syncLocalToSupabaseClient: () => Promise<{ success: boolean; message: string; counts?: Record<string, number> }>;
 }
 
-const STORAGE_KEY = 'bina_asri_storage_v6_sr_kalbar';
+const STORAGE_KEY = 'bina_asri_storage_v7_sr_kalbar';
+const PREV_STORAGE_KEY = 'bina_asri_storage_v6_sr_kalbar';
 const ADMIN_SESSION_KEY = 'bina_asri_admin_session';
+
+const normalizeKontenWeb = (rawKonten: Partial<KontenWeb> | undefined): KontenWeb => {
+  const merged: KontenWeb = { ...DEFAULT_KONTEN_WEB, ...(rawKonten || {}) };
+  if (merged.brand_sub && merged.brand_sub.toUpperCase().includes('PROVINSI')) {
+    merged.brand_sub = merged.brand_sub.replace(/PROVINSI\s*/gi, '').trim();
+  }
+  if (merged.footer_copyright && merged.footer_copyright.includes('Provinsi')) {
+    merged.footer_copyright = merged.footer_copyright.replace(/Provinsi\s*/gi, '').trim();
+  }
+  if (!merged.top_address || merged.top_address.includes('Hamka') || merged.top_address.includes('Nilam')) {
+    merged.top_address = DEFAULT_KONTEN_WEB.top_address;
+  }
+  if (!merged.kontak_alamat || merged.kontak_alamat.includes('Hamka') || merged.kontak_alamat.includes('Nilam')) {
+    merged.kontak_alamat = DEFAULT_KONTEN_WEB.kontak_alamat;
+  }
+  if (!merged.top_email || merged.top_email.includes('yayasanbinaasrikalbar@gmail.com')) {
+    merged.top_email = DEFAULT_KONTEN_WEB.top_email;
+  }
+  if (!merged.kontak_email || merged.kontak_email.includes('yayasanbinaasrikalbar@gmail.com')) {
+    merged.kontak_email = DEFAULT_KONTEN_WEB.kontak_email;
+  }
+  if (!merged.top_phone || merged.top_phone === '0821-5219-1199') {
+    merged.top_phone = DEFAULT_KONTEN_WEB.top_phone;
+  }
+  if (!merged.kontak_telepon || merged.kontak_telepon === '0821-5219-1199') {
+    merged.kontak_telepon = DEFAULT_KONTEN_WEB.kontak_telepon;
+  }
+  if (!merged.wa_number || merged.wa_number === '6282152191199' || merged.wa_number === '6281256789012') {
+    merged.wa_number = DEFAULT_KONTEN_WEB.wa_number;
+  }
+  if (!merged.social_youtube) merged.social_youtube = DEFAULT_KONTEN_WEB.social_youtube;
+  if (!merged.social_instagram) merged.social_instagram = DEFAULT_KONTEN_WEB.social_instagram;
+  if (!merged.social_facebook) merged.social_facebook = DEFAULT_KONTEN_WEB.social_facebook;
+  if (!merged.social_tiktok) merged.social_tiktok = DEFAULT_KONTEN_WEB.social_tiktok;
+  return merged;
+};
 
 const FoundationContext = createContext<FoundationContextType | undefined>(undefined);
 
@@ -112,18 +149,11 @@ export const FoundationProvider: React.FC<{ children: ReactNode }> = ({ children
   // 1. Initial State from Storage or Defaults
   const [kontenWeb, setKontenWeb] = useState<KontenWeb>(() => {
     try {
-      const raw = localStorage.getItem(STORAGE_KEY);
+      const raw = localStorage.getItem(STORAGE_KEY) || localStorage.getItem(PREV_STORAGE_KEY);
       if (raw) {
         const parsed = JSON.parse(raw);
         if (parsed.kontenWeb) {
-          const merged = { ...DEFAULT_KONTEN_WEB, ...parsed.kontenWeb };
-          if (merged.brand_sub && merged.brand_sub.toUpperCase().includes('PROVINSI')) {
-            merged.brand_sub = merged.brand_sub.replace(/PROVINSI\s*/gi, '').trim();
-          }
-          if (merged.footer_copyright && merged.footer_copyright.includes('Provinsi')) {
-            merged.footer_copyright = merged.footer_copyright.replace(/Provinsi\s*/gi, '').trim();
-          }
-          return merged;
+          return normalizeKontenWeb(parsed.kontenWeb);
         }
       }
     } catch (e) {
@@ -257,14 +287,7 @@ export const FoundationProvider: React.FC<{ children: ReactNode }> = ({ children
         if (json.success && json.data) {
           const d = json.data;
           if (d.kontenWeb) {
-            const clean = { ...d.kontenWeb };
-            if (clean.brand_sub && clean.brand_sub.toUpperCase().includes('PROVINSI')) {
-              clean.brand_sub = clean.brand_sub.replace(/PROVINSI\s*/gi, '').trim();
-            }
-            if (clean.footer_copyright && clean.footer_copyright.includes('Provinsi')) {
-              clean.footer_copyright = clean.footer_copyright.replace(/Provinsi\s*/gi, '').trim();
-            }
-            setKontenWeb(clean);
+            setKontenWeb(normalizeKontenWeb(d.kontenWeb));
           }
           if (Array.isArray(d.berita)) setBerita(d.berita);
           if (Array.isArray(d.program)) setProgram(d.program);

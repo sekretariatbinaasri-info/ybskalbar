@@ -1216,6 +1216,123 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                 </div>
               </div>
 
+              {/* 10. Tautan Media Sosial Resmi */}
+              <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+                <h4 className="font-extrabold text-sm text-emerald-900 border-b pb-2 flex items-center justify-between">
+                  <span className="flex items-center gap-2">
+                    <span>🌐 10. Tautan Media Sosial Resmi (YouTube, Instagram, Facebook, TikTok)</span>
+                  </span>
+                  <span className="text-xs font-normal text-slate-500">
+                    Ditautkan di Topbar, Kontak, dan Footer
+                  </span>
+                </h4>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 mb-1">
+                      YouTube Channel / URL
+                    </label>
+                    <div className="flex gap-2">
+                      <input
+                        type="url"
+                        value={formData.social_youtube || ''}
+                        onChange={(e) => updateField('social_youtube', e.target.value)}
+                        placeholder="https://www.youtube.com/@yayasanbinaasrikalbar"
+                        className="w-full px-3 py-2 rounded-xl border text-sm"
+                      />
+                      {formData.social_youtube && (
+                        <a
+                          href={formData.social_youtube}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="px-3 py-2 bg-red-50 text-red-600 hover:bg-red-100 rounded-xl text-xs font-bold shrink-0 flex items-center"
+                          title="Buka Link YouTube"
+                        >
+                          Tes ↗
+                        </a>
+                      )}
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 mb-1">
+                      Instagram Profile / URL
+                    </label>
+                    <div className="flex gap-2">
+                      <input
+                        type="url"
+                        value={formData.social_instagram || ''}
+                        onChange={(e) => updateField('social_instagram', e.target.value)}
+                        placeholder="https://www.instagram.com/yayasanbinaasri"
+                        className="w-full px-3 py-2 rounded-xl border text-sm"
+                      />
+                      {formData.social_instagram && (
+                        <a
+                          href={formData.social_instagram}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="px-3 py-2 bg-pink-50 text-pink-600 hover:bg-pink-100 rounded-xl text-xs font-bold shrink-0 flex items-center"
+                          title="Buka Link Instagram"
+                        >
+                          Tes ↗
+                        </a>
+                      )}
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 mb-1">
+                      Facebook Page / URL
+                    </label>
+                    <div className="flex gap-2">
+                      <input
+                        type="url"
+                        value={formData.social_facebook || ''}
+                        onChange={(e) => updateField('social_facebook', e.target.value)}
+                        placeholder="https://www.facebook.com/yayasanbinaasrikalbar"
+                        className="w-full px-3 py-2 rounded-xl border text-sm"
+                      />
+                      {formData.social_facebook && (
+                        <a
+                          href={formData.social_facebook}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="px-3 py-2 bg-blue-50 text-blue-600 hover:bg-blue-100 rounded-xl text-xs font-bold shrink-0 flex items-center"
+                          title="Buka Link Facebook"
+                        >
+                          Tes ↗
+                        </a>
+                      )}
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 mb-1">
+                      TikTok Account / URL
+                    </label>
+                    <div className="flex gap-2">
+                      <input
+                        type="url"
+                        value={formData.social_tiktok || ''}
+                        onChange={(e) => updateField('social_tiktok', e.target.value)}
+                        placeholder="https://www.tiktok.com/@yayasanbinaasri"
+                        className="w-full px-3 py-2 rounded-xl border text-sm"
+                      />
+                      {formData.social_tiktok && (
+                        <a
+                          href={formData.social_tiktok}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="px-3 py-2 bg-slate-100 text-slate-900 hover:bg-slate-200 rounded-xl text-xs font-bold shrink-0 flex items-center"
+                          title="Buka Link TikTok"
+                        >
+                          Tes ↗
+                        </a>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
               <button
                 type="submit"
                 className="w-full py-4 rounded-xl bg-emerald-700 hover:bg-emerald-600 text-white font-extrabold text-base shadow-lg flex items-center justify-center gap-2"

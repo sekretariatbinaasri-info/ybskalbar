@@ -61,6 +61,10 @@ export interface KontenWeb {
   kontak_telepon: string;
   kontak_email: string;
   kontak_jam: string;
+  social_youtube?: string;
+  social_instagram?: string;
+  social_facebook?: string;
+  social_tiktok?: string;
   footer_desc: string;
   footer_legal: string;
   footer_copyright: string;

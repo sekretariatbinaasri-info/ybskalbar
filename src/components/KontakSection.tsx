@@ -2,13 +2,14 @@ import React, { useState } from 'react';
 import { useFoundation } from '../context/FoundationContext';
 import { EditableText } from './EditableText';
 import { MapPin, Phone, Mail, Clock, Send, Edit2 } from 'lucide-react';
+import { SocialMediaBar } from './common/SocialMediaBar';
 
 interface KontakSectionProps {
   onOpenEditKontak: () => void;
 }
 
 export const KontakSection: React.FC<KontakSectionProps> = ({ onOpenEditKontak }) => {
-  const { adminSession, submitPesan } = useFoundation();
+  const { kontenWeb, adminSession, submitPesan } = useFoundation();
 
   const [formData, setFormData] = useState({
     nama: '',
@@ -135,9 +136,17 @@ export const KontakSection: React.FC<KontakSectionProps> = ({ onOpenEditKontak }
                   </div>
                 </div>
               </div>
+
+              {/* Media Sosial Resmi */}
+              <div className="mt-8 pt-6 border-t border-white/10">
+                <h5 className="font-bold uppercase tracking-wider text-amber-400 text-[11px] mb-3 flex items-center gap-1.5">
+                  <span>🌐 Media Sosial Resmi Kami</span>
+                </h5>
+                <SocialMediaBar variant="contact" />
+              </div>
             </div>
 
-            <div className="mt-8 pt-6 border-t border-white/10 text-[11px] text-emerald-200">
+            <div className="mt-6 pt-4 border-t border-white/10 text-[11px] text-emerald-200">
               Yayasan Bina Asri • Melayani masyarakat dan dhuafa di Kalimantan Barat dengan hati dan amanah.
             </div>
           </div>
@@ -244,7 +253,7 @@ export const KontakSection: React.FC<KontakSectionProps> = ({ onOpenEditKontak }
                 </button>
 
                 <a
-                  href={`https://wa.me/6282152191199?text=${encodeURIComponent(
+                  href={`https://wa.me/${(kontenWeb.wa_number || '6281320420906').replace(/[^0-9]/g, '')}?text=${encodeURIComponent(
                     `Assalamu'alaikum Yayasan Bina Asri, saya ${formData.nama || 'Pengunjung'}${
                       formData.subjek ? ` [Perihal: ${formData.subjek}]` : ''
                     }: ${formData.pesan || 'ingin berkonsultasi mengenai program yayasan.'}`
@@ -253,7 +262,7 @@ export const KontakSection: React.FC<KontakSectionProps> = ({ onOpenEditKontak }
                   rel="noopener noreferrer"
                   className="w-full py-3 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-800 font-bold text-xs flex items-center justify-center gap-2 border border-emerald-200 transition-colors text-center"
                 >
-                  <span>💬 Atau Hubungi Langsung via WhatsApp Resmi</span>
+                  <span>💬 Atau Hubungi Langsung via WhatsApp ({kontenWeb.kontak_telepon || '+62 813-2042-0906'})</span>
                 </a>
               </div>
             </form>

@@ -2,6 +2,7 @@ import React from 'react';
 import { useFoundation } from '../context/FoundationContext';
 import { EditableText } from './EditableText';
 import { Lock, Settings, Edit2 } from 'lucide-react';
+import { SocialMediaBar } from './common/SocialMediaBar';
 
 interface FooterProps {
   onOpenAdminLogin: () => void;
@@ -147,20 +148,30 @@ export const Footer: React.FC<FooterProps> = ({ onOpenAdminLogin, onOpenEditFoot
             </ul>
           </div>
 
-          {/* Col 4: Sekretariat */}
-          <div className="lg:col-span-3 space-y-3 text-xs sm:text-sm">
+          {/* Col 4: Sekretariat & Media Sosial */}
+          <div className="lg:col-span-3 space-y-3.5 text-xs sm:text-sm">
             <h5 className="text-white font-extrabold text-sm uppercase tracking-wider">
-              Sekretariat
+              Sekretariat Resmi
             </h5>
-            <p className="text-slate-400 leading-relaxed">
+            <p className="text-slate-300 leading-relaxed">
               {kontenWeb.kontak_alamat}
             </p>
-            <p className="text-slate-400">
+            <p className="text-slate-300">
               Telp: {kontenWeb.kontak_telepon}
             </p>
             <p className="text-emerald-400 font-semibold">
               WhatsApp: +{kontenWeb.wa_number}
             </p>
+            <p className="text-slate-300 break-all">
+              Email: <a href={`mailto:${kontenWeb.kontak_email}`} className="text-amber-400 hover:underline">{kontenWeb.kontak_email}</a>
+            </p>
+
+            <div className="pt-2">
+              <h6 className="text-slate-400 text-xs font-bold uppercase tracking-wider mb-2">
+                Media Sosial Kami
+              </h6>
+              <SocialMediaBar variant="footer" />
+            </div>
 
             {adminSession && (
               <div className="pt-2">

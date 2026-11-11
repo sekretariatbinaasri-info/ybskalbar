@@ -2,6 +2,7 @@ import React from 'react';
 import { useFoundation } from '../context/FoundationContext';
 import { EditableText } from './EditableText';
 import { MapPin, Mail, Phone, Lock, Settings, Edit2 } from 'lucide-react';
+import { SocialMediaBar } from './common/SocialMediaBar';
 
 interface TopBarProps {
   onOpenAdminLogin: () => void;
@@ -12,8 +13,8 @@ export const TopBar: React.FC<TopBarProps> = ({ onOpenAdminLogin, onOpenEditKont
   const { adminSession, setActiveView } = useFoundation();
 
   return (
-    <div className="bg-gradient-to-r from-emerald-950 to-emerald-900 text-emerald-100 text-xs py-2 border-b border-white/10">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-wrap items-center justify-between gap-2.5">
+    <div className="bg-gradient-to-r from-emerald-950 via-emerald-900 to-emerald-950 text-emerald-100 text-xs py-2 border-b border-white/10">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-wrap items-center justify-between gap-3">
         {/* Contact Info */}
         <div className="flex items-center gap-4 sm:gap-6 flex-wrap text-xs">
           <div className="flex items-center gap-1.5 hover:text-white transition-colors">
@@ -29,6 +30,10 @@ export const TopBar: React.FC<TopBarProps> = ({ onOpenAdminLogin, onOpenEditKont
             <EditableText contentKey="top_phone" as="span" />
           </div>
         </div>
+
+        {/* Right side: Social Media links & Admin Buttons */}
+        <div className="flex items-center gap-3 sm:gap-4 ml-auto">
+          <SocialMediaBar variant="topbar" />
 
         {/* Admin Action Buttons (Hanya muncul jika sudah login admin) */}
         {adminSession && (
@@ -50,6 +55,7 @@ export const TopBar: React.FC<TopBarProps> = ({ onOpenAdminLogin, onOpenEditKont
             </button>
           </div>
         )}
+        </div>
       </div>
     </div>
   );

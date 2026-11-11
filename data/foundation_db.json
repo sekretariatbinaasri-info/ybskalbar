@@ -4,10 +4,14 @@
     "brand_sub": "KALIMANTAN BARAT",
     "logo_bulat": "https://lh3.googleusercontent.com/d/1t_el0P4aHM3gLG4RTDrupVAjYTIaMqMZ",
     "logo_persegi": "https://lh3.googleusercontent.com/d/1BX2QKAod3qOttaebEYTlW61Mx4L5__5Q",
-    "top_address": "Jl. Prof. Dr. Hamka, Gg. Nilam 3 No.14, Pontianak Barat 78115",
-    "top_email": "yayasanbinaasrikalbar@gmail.com",
-    "top_phone": "0821-5219-1199",
-    "wa_number": "6282152191199",
+    "top_address": "Jalan Tebu, Komp. Pondok Cipta Asri No. 1 Pontianak 78113",
+    "top_email": "sekretariatbinaasri@gmail.com",
+    "top_phone": "+62 813-2042-0906",
+    "wa_number": "6281320420906",
+    "social_youtube": "https://www.youtube.com/@yayasanbinaasrikalbar",
+    "social_instagram": "https://www.instagram.com/yayasanbinaasri",
+    "social_facebook": "https://www.facebook.com/yayasanbinaasrikalbar",
+    "social_tiktok": "https://www.tiktok.com/@yayasanbinaasri",
     "hero_badge": "Sub Recipient (SR) Eliminasi TBC Kalimantan Barat | Konsorsium Penabulu-STPI & Global Fund",
     "hero_title": "Yayasan Bina Asri Kalimantan Barat",
     "hero_desc": "Lembaga kesehatan, kemanusiaan, keagamaan, dan sosial yang berfokus pada penanggulangan Tuberkulosis (TBC), Stunting, dan Kesehatan Reproduksi untuk mewujudkan masyarakat Kalimantan Barat yang sehat, sejahtera, dan bermartabat menuju Indonesia Bebas TBC 2030.",
@@ -50,9 +54,9 @@
     "donasi_banks": "[{\"id\":1,\"bank\":\"BANK KALBAR\",\"badge\":\"Daerah\",\"norek\":\"1025-00-123456\",\"an\":\"a.n. YAYASAN BINA ASRI KALBAR\"},{\"id\":2,\"bank\":\"BANK BRI\",\"badge\":\"Nasional\",\"norek\":\"0098-01-002345-50-8\",\"an\":\"a.n. YAYASAN BINA ASRI\"},{\"id\":3,\"bank\":\"BANK MANDIRI\",\"badge\":\"Nasional\",\"norek\":\"146-00-9876543-2\",\"an\":\"a.n. YAYASAN BINA ASRI\"},{\"id\":4,\"bank\":\"BANK SYARIAH (BSI)\",\"badge\":\"Syariah\",\"norek\":\"714-567-8901\",\"an\":\"a.n. YAYASAN BINA ASRI\"}]",
     "kontak_title": "Sekretariat & Layanan Narahubung",
     "kontak_desc": "Kantor sekretariat Yayasan Bina Asri senantiasa terbuka untuk koordinasi kemitraan faskes, konsultasi TBC, permohonan pendampingan, maupun silaturahmi.",
-    "kontak_alamat": "Jl. Prof. Dr. Hamka, Gg. Nilam 3 No.14, Pontianak Barat, 78115, Kalimantan Barat",
-    "kontak_telepon": "0821-5219-1199",
-    "kontak_email": "yayasanbinaasrikalbar@gmail.com",
+    "kontak_alamat": "Jalan Tebu, Komp. Pondok Cipta Asri No. 1 Pontianak 78113",
+    "kontak_telepon": "+62 813-2042-0906",
+    "kontak_email": "sekretariatbinaasri@gmail.com",
     "kontak_jam": "Senin - Sabtu: 08.00 - 16.30 WIB",
     "footer_desc": "Yayasan Bina Asri adalah Sub Recipient (SR) Kalimantan Barat untuk Program Eliminasi TBC di Indonesia. Berkhidmat dalam kesehatan, kemanusiaan, dan kesejahteraan sosial masyarakat.",
     "footer_legal": "Akta Notaris Mada Reni Damanik, SH, MM No. 55 / 1999\nSK Kemenkumham RI No. C-1910 HT.01.02.TH 2007\nPortal Resmi: www.binaasrikalbar.com",
@@ -219,7 +223,7 @@
       "jabatan": "Ketua Dewan Pembina & Pendiri Yayasan Bina Asri",
       "cabang": "Pusat / SR Kalbar",
       "foto": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300",
-      "kontak": "0821-5219-1199"
+      "kontak": "+62 813-2042-0906"
     },
     {
       "id": 102,
@@ -227,7 +231,7 @@
       "jabatan": "Program Coordinator Eliminasi TBC",
       "cabang": "Pusat / SR Kalbar",
       "foto": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300",
-      "kontak": "0821-5219-1199"
+      "kontak": "+62 813-2042-0906"
     },
     {
       "id": 103,
@@ -235,7 +239,7 @@
       "jabatan": "Monitoring, Evaluation & Learning (MEL)",
       "cabang": "Pusat / SR Kalbar",
       "foto": "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=300",
-      "kontak": "0821-5219-1199"
+      "kontak": "+62 813-2042-0906"
     },
     {
       "id": 104,
@@ -243,7 +247,7 @@
       "jabatan": "Finance, Admin & Logistik Program",
       "cabang": "Pusat / SR Kalbar",
       "foto": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=300",
-      "kontak": "0821-5219-1199"
+      "kontak": "+62 813-2042-0906"
     },
     {
       "id": 201,
@@ -251,7 +255,7 @@
       "jabatan": "Penanggung Jawab SSR Pontianak",
       "cabang": "Kota Pontianak",
       "foto": "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=300",
-      "kontak": "0821-5219-1199"
+      "kontak": "+62 813-2042-0906"
     },
     {
       "id": 202,
@@ -259,7 +263,7 @@
       "jabatan": "Pengelola Data 23 Puskesmas Mitra",
       "cabang": "Kota Pontianak",
       "foto": "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=300",
-      "kontak": "0821-5219-1199"
+      "kontak": "+62 813-2042-0906"
     },
     {
       "id": 301,
@@ -267,7 +271,7 @@
       "jabatan": "Penanggung Jawab SSR Kubu Raya",
       "cabang": "Kabupaten Kubu Raya",
       "foto": "https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?w=300",
-      "kontak": "0821-5219-1199"
+      "kontak": "+62 813-2042-0906"
     },
     {
       "id": 302,
@@ -275,7 +279,7 @@
       "jabatan": "Penggerak Kader 15 Puskesmas",
       "cabang": "Kabupaten Kubu Raya",
       "foto": "https://images.unsplash.com/photo-1501196354995-cbb51c65aaea?w=300",
-      "kontak": "0821-5219-1199"
+      "kontak": "+62 813-2042-0906"
     },
     {
       "id": 401,
@@ -283,7 +287,7 @@
       "jabatan": "Penanggung Jawab SSR Singkawang",
       "cabang": "Kota Singkawang",
       "foto": "https://images.unsplash.com/photo-1507591064344-4c6ce005b128?w=300",
-      "kontak": "0821-5219-1199"
+      "kontak": "+62 813-2042-0906"
     },
     {
       "id": 402,
@@ -291,7 +295,7 @@
       "jabatan": "Pendamping Pasien & 10 Puskesmas",
       "cabang": "Kota Singkawang",
       "foto": "https://images.unsplash.com/photo-1567532939604-b6b5b0db2604?w=300",
-      "kontak": "0821-5219-1199"
+      "kontak": "+62 813-2042-0906"
     },
     {
       "id": 501,
@@ -299,7 +303,7 @@
       "jabatan": "Penanggung Jawab SSR Mempawah",
       "cabang": "Kabupaten Mempawah",
       "foto": "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=300",
-      "kontak": "0821-5219-1199"
+      "kontak": "+62 813-2042-0906"
     },
     {
       "id": 502,
@@ -307,7 +311,7 @@
       "jabatan": "Fasilitator 14 Puskesmas Wilayah",
       "cabang": "Kabupaten Mempawah",
       "foto": "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=300",
-      "kontak": "0821-5219-1199"
+      "kontak": "+62 813-2042-0906"
     },
     {
       "id": 601,
@@ -315,7 +319,7 @@
       "jabatan": "Penanggung Jawab SSR Sanggau",
       "cabang": "Kabupaten Sanggau",
       "foto": "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=300",
-      "kontak": "0821-5219-1199"
+      "kontak": "+62 813-2042-0906"
     },
     {
       "id": 602,
@@ -323,7 +327,7 @@
       "jabatan": "Pengelola 8 Puskesmas & RSUD Sanggau",
       "cabang": "Kabupaten Sanggau",
       "foto": "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=300",
-      "kontak": "0821-5219-1199"
+      "kontak": "+62 813-2042-0906"
     },
     {
       "id": 701,
@@ -331,7 +335,7 @@
       "jabatan": "Penanggung Jawab SSR Sintang",
       "cabang": "Kabupaten Sintang",
       "foto": "https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?w=300",
-      "kontak": "0821-5219-1199"
+      "kontak": "+62 813-2042-0906"
     },
     {
       "id": 702,
@@ -339,7 +343,7 @@
       "jabatan": "Pengelola 9 Puskesmas Hulu Kapuas",
       "cabang": "Kabupaten Sintang",
       "foto": "https://images.unsplash.com/photo-1501196354995-cbb51c65aaea?w=300",
-      "kontak": "0821-5219-1199"
+      "kontak": "+62 813-2042-0906"
     },
     {
       "id": 801,
@@ -347,7 +351,7 @@
       "jabatan": "Penanggung Jawab SSR Ketapang",
       "cabang": "Kabupaten Ketapang",
       "foto": "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=300",
-      "kontak": "0821-5219-1199"
+      "kontak": "+62 813-2042-0906"
     },
     {
       "id": 802,
@@ -355,7 +359,7 @@
       "jabatan": "Pengelola 9 Puskesmas & RSUD Agoesdjam",
       "cabang": "Kabupaten Ketapang",
       "foto": "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=300",
-      "kontak": "0821-5219-1199"
+      "kontak": "+62 813-2042-0906"
     }
   ],
   "banks": [

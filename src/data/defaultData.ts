@@ -9,8 +9,8 @@ export const DAFTAR_CABANG_DAERAH: CabangDaerah[] = [
     nama: 'Pusat / SR Kalbar',
     tipe: 'Pusat',
     wilayah: 'Kalimantan Barat',
-    alamat: 'Jl. Prof. Dr. Hamka, Gg. Nilam 3 No. 14, Pontianak Barat 78115',
-    telepon: '0821-5219-1199',
+    alamat: 'Jalan Tebu, Komp. Pondok Cipta Asri No. 1 Pontianak 78113',
+    telepon: '+62 813-2042-0906',
     penanggungJawab: 'Dr. Drs. H. Mardjan, M.Kes (Ketua Yayasan)',
     jumlahBinaan: '88 Mitra Puskesmas & 6 RSUD',
     keterangan: 'Kantor Induk Sub Recipient (SR) Kalimantan Barat Program Eliminasi TBC Global Fund Konsorsium Penabulu-STPI.'
@@ -20,8 +20,8 @@ export const DAFTAR_CABANG_DAERAH: CabangDaerah[] = [
     nama: 'Kota Pontianak',
     tipe: 'Kota',
     wilayah: 'Kota Pontianak',
-    alamat: 'Jl. Prof. Dr. Hamka, Gg. Nilam 3 No. 14, Pontianak Barat',
-    telepon: '0821-5219-1199',
+    alamat: 'Jalan Tebu, Komp. Pondok Cipta Asri No. 1 Pontianak 78113',
+    telepon: '+62 813-2042-0906',
     penanggungJawab: 'Koordinator SSR Kota Pontianak',
     jumlahBinaan: '23 Puskesmas, RSUD Dr. Soedarso & RS Antonius',
     keterangan: 'Wilayah kerja SSR Kota Pontianak meliputi 23 Puskesmas dengan fokus investigasi kontak dan pendampingan pasien TBC hingga sembuh.'
@@ -32,7 +32,7 @@ export const DAFTAR_CABANG_DAERAH: CabangDaerah[] = [
     tipe: 'Kabupaten',
     wilayah: 'Kabupaten Kubu Raya',
     alamat: 'Sungai Raya Dalam, Kabupaten Kubu Raya (Mitra PPSW Borneo)',
-    telepon: '0821-5219-1199',
+    telepon: '+62 813-2042-0906',
     penanggungJawab: 'PPSW BORNEO (Mitra SSR Kubu Raya)',
     jumlahBinaan: '15 Puskesmas & Ratusan Kader Komunitas',
     keterangan: 'Pelaksana program SSR TBC di Kubu Raya bersama mitra PPSW Borneo mencakup 15 Puskesmas pesisir dan daratan.'
@@ -43,7 +43,7 @@ export const DAFTAR_CABANG_DAERAH: CabangDaerah[] = [
     tipe: 'Kota',
     wilayah: 'Kota Singkawang',
     alamat: 'Jl. Pemuda No. 18, Singkawang Barat',
-    telepon: '0821-5219-1199',
+    telepon: '+62 813-2042-0906',
     penanggungJawab: 'Koordinator SSR Kota Singkawang',
     jumlahBinaan: '10 Puskesmas & RSUD Dr. Abdul Aziz',
     keterangan: 'Jaringan layanan penemuan aktif TBC dan penjangkauan komunitas terduga di 10 Puskesmas wilayah Kota Singkawang.'
@@ -54,7 +54,7 @@ export const DAFTAR_CABANG_DAERAH: CabangDaerah[] = [
     tipe: 'Kabupaten',
     wilayah: 'Kabupaten Mempawah',
     alamat: 'Jl. Raden Kusno, Mempawah Hilir',
-    telepon: '0821-5219-1199',
+    telepon: '+62 813-2042-0906',
     penanggungJawab: 'Koordinator SSR Kab. Mempawah',
     jumlahBinaan: '14 Puskesmas Wilayah Kerja',
     keterangan: 'Pelayanan skrining TBC, investigasi kontak erat serumah, dan edukasi pencegahan stigma di 14 Puskesmas Mempawah.'
@@ -65,7 +65,7 @@ export const DAFTAR_CABANG_DAERAH: CabangDaerah[] = [
     tipe: 'Kabupaten',
     wilayah: 'Kabupaten Sambas',
     alamat: 'Jl. Pembangunan No. 45, Sambas',
-    telepon: '0821-5219-1199',
+    telepon: '+62 813-2042-0906',
     penanggungJawab: 'Koordinator SSR Kab. Sambas',
     jumlahBinaan: '28 Puskesmas & RSUD Sambas',
     keterangan: 'Penjangkauan komunitas pesisir dan wilayah perbatasan di 28 Puskesmas Kabupaten Sambas.'
@@ -76,7 +76,7 @@ export const DAFTAR_CABANG_DAERAH: CabangDaerah[] = [
     tipe: 'Kabupaten',
     wilayah: 'Kabupaten Bengkayang',
     alamat: 'Jl. Sanggau Ledo, Bengkayang',
-    telepon: '0821-5219-1199',
+    telepon: '+62 813-2042-0906',
     penanggungJawab: 'Koordinator SSR Kab. Bengkayang',
     jumlahBinaan: '17 Puskesmas & RSUD Bengkayang',
     keterangan: 'Edukasi dan penemuan aktif kasus TBC di wilayah pedalaman dan perbatasan Kabupaten Bengkayang.'
@@ -87,7 +87,7 @@ export const DAFTAR_CABANG_DAERAH: CabangDaerah[] = [
     tipe: 'Kabupaten',
     wilayah: 'Kabupaten Landak',
     alamat: 'Jl. Raya Ngabang, Kabupaten Landak',
-    telepon: '0821-5219-1199',
+    telepon: '+62 813-2042-0906',
     penanggungJawab: 'Koordinator SSR Kab. Landak',
     jumlahBinaan: '16 Puskesmas & RSUD Landak',
     keterangan: 'Pendampingan kepatuhan minum obat dan investigasi kontak erat TBC di 16 Puskesmas Kabupaten Landak.'
@@ -98,7 +98,7 @@ export const DAFTAR_CABANG_DAERAH: CabangDaerah[] = [
     tipe: 'Kabupaten',
     wilayah: 'Kabupaten Sanggau',
     alamat: 'Jl. Jenderal Sudirman, Kapuas, Sanggau',
-    telepon: '0821-5219-1199',
+    telepon: '+62 813-2042-0906',
     penanggungJawab: 'Koordinator SSR Kab. Sanggau',
     jumlahBinaan: '8 Puskesmas & RSUD Sanggau',
     keterangan: 'Kegiatan edukasi, pemeriksaan dahak massal, dan pendampingan kepatuhan minum obat di 8 wilayah Puskesmas Sanggau.'
@@ -109,7 +109,7 @@ export const DAFTAR_CABANG_DAERAH: CabangDaerah[] = [
     tipe: 'Kabupaten',
     wilayah: 'Kabupaten Sekadau',
     alamat: 'Jl. Merdeka Barat, Sekadau Hilir',
-    telepon: '0821-5219-1199',
+    telepon: '+62 813-2042-0906',
     penanggungJawab: 'Koordinator SSR Kab. Sekadau',
     jumlahBinaan: '12 Puskesmas & RSUD Sekadau',
     keterangan: 'Jejaring rujukan dan pendampingan kader komunitas penanggulangan TBC di Kabupaten Sekadau.'
@@ -120,7 +120,7 @@ export const DAFTAR_CABANG_DAERAH: CabangDaerah[] = [
     tipe: 'Kabupaten',
     wilayah: 'Kabupaten Sintang',
     alamat: 'Jl. PKP Mujahidin, Baning Kota, Sintang',
-    telepon: '0821-5219-1199',
+    telepon: '+62 813-2042-0906',
     penanggungJawab: 'Koordinator SSR Kab. Sintang',
     jumlahBinaan: '9 Puskesmas & RSUD Ade Muhammad Djoen',
     keterangan: 'Pusat rujukan dan investigasi kontak penanggulangan TBC di wilayah perhuluan Kapuas Sintang.'
@@ -131,7 +131,7 @@ export const DAFTAR_CABANG_DAERAH: CabangDaerah[] = [
     tipe: 'Kabupaten',
     wilayah: 'Kabupaten Melawi',
     alamat: 'Jl. Juang No. 20, Nanga Pinoh, Melawi',
-    telepon: '0821-5219-1199',
+    telepon: '+62 813-2042-0906',
     penanggungJawab: 'Koordinator SSR Kab. Melawi',
     jumlahBinaan: '11 Puskesmas & RSUD Melawi',
     keterangan: 'Penjangkauan aktif terduga TBC dan pendampingan pasien di kawasan Nanga Pinoh dan sekitarnya.'
@@ -142,7 +142,7 @@ export const DAFTAR_CABANG_DAERAH: CabangDaerah[] = [
     tipe: 'Kabupaten',
     wilayah: 'Kabupaten Kapuas Hulu',
     alamat: 'Jl. D.I. Panjaitan, Putussibau, Kapuas Hulu',
-    telepon: '0821-5219-1199',
+    telepon: '+62 813-2042-0906',
     penanggungJawab: 'Koordinator SSR Kab. Kapuas Hulu',
     jumlahBinaan: '23 Puskesmas & RSUD Achmad Diponegoro',
     keterangan: 'Pelayanan penemuan dan pendampingan TBC di wilayah jantung Kalimantan Kapuas Hulu.'
@@ -153,7 +153,7 @@ export const DAFTAR_CABANG_DAERAH: CabangDaerah[] = [
     tipe: 'Kabupaten',
     wilayah: 'Kabupaten Ketapang',
     alamat: 'Delta Pawan, Kabupaten Ketapang',
-    telepon: '0821-5219-1199',
+    telepon: '+62 813-2042-0906',
     penanggungJawab: 'Koordinator SSR Kab. Ketapang',
     jumlahBinaan: '9 Puskesmas & RSUD Agoesdjam Ketapang',
     keterangan: 'Penyuluhan aktif, pendampingan pasien mangkir (LTFU), dan jejaring layanan TBC di 9 Puskesmas Ketapang.'
@@ -164,7 +164,7 @@ export const DAFTAR_CABANG_DAERAH: CabangDaerah[] = [
     tipe: 'Kabupaten',
     wilayah: 'Kabupaten Kayong Utara',
     alamat: 'Jl. Tanah Merah, Sukadana, Kayong Utara',
-    telepon: '0821-5219-1199',
+    telepon: '+62 813-2042-0906',
     penanggungJawab: 'Koordinator SSR Kab. Kayong Utara',
     jumlahBinaan: '9 Puskesmas & RSUD Sultan Muhammad Jamaludin I',
     keterangan: 'Penguatan kader komunitas pesisir Kayong Utara dalam penemuan aktif dan pendampingan pasien TBC.'
@@ -183,10 +183,14 @@ export const DEFAULT_KONTEN_WEB: KontenWeb = {
   brand_sub: "KALIMANTAN BARAT",
   logo_bulat: LOGO_BULAT,
   logo_persegi: LOGO_PERSEGI,
-  top_address: "Jl. Prof. Dr. Hamka, Gg. Nilam 3 No.14, Pontianak Barat 78115",
-  top_email: "yayasanbinaasrikalbar@gmail.com",
-  top_phone: "0821-5219-1199",
-  wa_number: "6282152191199",
+  top_address: "Jalan Tebu, Komp. Pondok Cipta Asri No. 1 Pontianak 78113",
+  top_email: "sekretariatbinaasri@gmail.com",
+  top_phone: "+62 813-2042-0906",
+  wa_number: "6281320420906",
+  social_youtube: "https://www.youtube.com/@yayasanbinaasrikalbar",
+  social_instagram: "https://www.instagram.com/yayasanbinaasri",
+  social_facebook: "https://www.facebook.com/yayasanbinaasrikalbar",
+  social_tiktok: "https://www.tiktok.com/@yayasanbinaasri",
   hero_badge: "Sub Recipient (SR) Eliminasi TBC Kalimantan Barat | Konsorsium Penabulu-STPI & Global Fund",
   hero_title: "Yayasan Bina Asri Kalimantan Barat",
   hero_desc: "Lembaga kesehatan, kemanusiaan, keagamaan, dan sosial yang berfokus pada penanggulangan Tuberkulosis (TBC), Stunting, dan Kesehatan Reproduksi untuk mewujudkan masyarakat Kalimantan Barat yang sehat, sejahtera, dan bermartabat menuju Indonesia Bebas TBC 2030.",
@@ -229,9 +233,9 @@ export const DEFAULT_KONTEN_WEB: KontenWeb = {
   donasi_banks: JSON.stringify(DEFAULT_BANKS),
   kontak_title: "Sekretariat & Layanan Narahubung",
   kontak_desc: "Kantor sekretariat Yayasan Bina Asri senantiasa terbuka untuk koordinasi kemitraan faskes, konsultasi TBC, permohonan pendampingan, maupun silaturahmi.",
-  kontak_alamat: "Jl. Prof. Dr. Hamka, Gg. Nilam 3 No.14, Pontianak Barat, 78115, Kalimantan Barat",
-  kontak_telepon: "0821-5219-1199",
-  kontak_email: "yayasanbinaasrikalbar@gmail.com",
+  kontak_alamat: "Jalan Tebu, Komp. Pondok Cipta Asri No. 1 Pontianak 78113",
+  kontak_telepon: "+62 813-2042-0906",
+  kontak_email: "sekretariatbinaasri@gmail.com",
   kontak_jam: "Senin - Sabtu: 08.00 - 16.30 WIB",
   footer_desc: "Yayasan Bina Asri adalah Sub Recipient (SR) Kalimantan Barat untuk Program Eliminasi TBC di Indonesia. Berkhidmat dalam kesehatan, kemanusiaan, dan kesejahteraan sosial masyarakat.",
   footer_legal: "Akta Notaris Mada Reni Damanik, SH, MM No. 55 / 1999\nSK Kemenkumham RI No. C-1910 HT.01.02.TH 2007\nPortal Resmi: www.binaasrikalbar.com",
@@ -379,7 +383,7 @@ export const DEFAULT_PENGURUS: PengurusItem[] = [
     jabatan: "Ketua Dewan Pembina & Pendiri Yayasan Bina Asri",
     cabang: "Pusat / SR Kalbar",
     foto: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300",
-    kontak: "0821-5219-1199"
+    kontak: "+62 813-2042-0906"
   },
   {
     id: 102,
@@ -387,7 +391,7 @@ export const DEFAULT_PENGURUS: PengurusItem[] = [
     jabatan: "Program Coordinator Eliminasi TBC",
     cabang: "Pusat / SR Kalbar",
     foto: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300",
-    kontak: "0821-5219-1199"
+    kontak: "+62 813-2042-0906"
   },
   {
     id: 103,
@@ -395,7 +399,7 @@ export const DEFAULT_PENGURUS: PengurusItem[] = [
     jabatan: "Monitoring, Evaluation & Learning (MEL)",
     cabang: "Pusat / SR Kalbar",
     foto: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=300",
-    kontak: "0821-5219-1199"
+    kontak: "+62 813-2042-0906"
   },
   {
     id: 104,
@@ -403,7 +407,7 @@ export const DEFAULT_PENGURUS: PengurusItem[] = [
     jabatan: "Finance, Admin & Logistik Program",
     cabang: "Pusat / SR Kalbar",
     foto: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=300",
-    kontak: "0821-5219-1199"
+    kontak: "+62 813-2042-0906"
   },
 
   // 2. KOTA PONTIANAK (SSR PONTIANAK)
@@ -413,7 +417,7 @@ export const DEFAULT_PENGURUS: PengurusItem[] = [
     jabatan: "Penanggung Jawab SSR Pontianak",
     cabang: "Kota Pontianak",
     foto: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=300",
-    kontak: "0821-5219-1199"
+    kontak: "+62 813-2042-0906"
   },
   {
     id: 202,
@@ -421,7 +425,7 @@ export const DEFAULT_PENGURUS: PengurusItem[] = [
     jabatan: "Pengelola Data 23 Puskesmas Mitra",
     cabang: "Kota Pontianak",
     foto: "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=300",
-    kontak: "0821-5219-1199"
+    kontak: "+62 813-2042-0906"
   },
 
   // 3. KABUPATEN KUBU RAYA (MITRA PPSW BORNEO)
@@ -431,7 +435,7 @@ export const DEFAULT_PENGURUS: PengurusItem[] = [
     jabatan: "Penanggung Jawab SSR Kubu Raya",
     cabang: "Kabupaten Kubu Raya",
     foto: "https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?w=300",
-    kontak: "0821-5219-1199"
+    kontak: "+62 813-2042-0906"
   },
   {
     id: 302,
@@ -439,7 +443,7 @@ export const DEFAULT_PENGURUS: PengurusItem[] = [
     jabatan: "Penggerak Kader 15 Puskesmas",
     cabang: "Kabupaten Kubu Raya",
     foto: "https://images.unsplash.com/photo-1501196354995-cbb51c65aaea?w=300",
-    kontak: "0821-5219-1199"
+    kontak: "+62 813-2042-0906"
   },
 
   // 4. KOTA SINGKAWANG (SSR SINGKAWANG)
@@ -449,7 +453,7 @@ export const DEFAULT_PENGURUS: PengurusItem[] = [
     jabatan: "Penanggung Jawab SSR Singkawang",
     cabang: "Kota Singkawang",
     foto: "https://images.unsplash.com/photo-1507591064344-4c6ce005b128?w=300",
-    kontak: "0821-5219-1199"
+    kontak: "+62 813-2042-0906"
   },
   {
     id: 402,
@@ -457,7 +461,7 @@ export const DEFAULT_PENGURUS: PengurusItem[] = [
     jabatan: "Pendamping Pasien & 10 Puskesmas",
     cabang: "Kota Singkawang",
     foto: "https://images.unsplash.com/photo-1567532939604-b6b5b0db2604?w=300",
-    kontak: "0821-5219-1199"
+    kontak: "+62 813-2042-0906"
   },
 
   // 5. KABUPATEN MEMPAWAH (SSR MEMPAWAH)
@@ -467,7 +471,7 @@ export const DEFAULT_PENGURUS: PengurusItem[] = [
     jabatan: "Penanggung Jawab SSR Mempawah",
     cabang: "Kabupaten Mempawah",
     foto: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=300",
-    kontak: "0821-5219-1199"
+    kontak: "+62 813-2042-0906"
   },
   {
     id: 502,
@@ -475,7 +479,7 @@ export const DEFAULT_PENGURUS: PengurusItem[] = [
     jabatan: "Fasilitator 14 Puskesmas Wilayah",
     cabang: "Kabupaten Mempawah",
     foto: "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=300",
-    kontak: "0821-5219-1199"
+    kontak: "+62 813-2042-0906"
   },
 
   // 6. KABUPATEN SANGGAU (SSR SANGGAU)
@@ -485,7 +489,7 @@ export const DEFAULT_PENGURUS: PengurusItem[] = [
     jabatan: "Penanggung Jawab SSR Sanggau",
     cabang: "Kabupaten Sanggau",
     foto: "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=300",
-    kontak: "0821-5219-1199"
+    kontak: "+62 813-2042-0906"
   },
   {
     id: 602,
@@ -493,7 +497,7 @@ export const DEFAULT_PENGURUS: PengurusItem[] = [
     jabatan: "Pengelola 8 Puskesmas & RSUD Sanggau",
     cabang: "Kabupaten Sanggau",
     foto: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=300",
-    kontak: "0821-5219-1199"
+    kontak: "+62 813-2042-0906"
   },
 
   // 7. KABUPATEN SINTANG (SSR SINTANG)
@@ -503,7 +507,7 @@ export const DEFAULT_PENGURUS: PengurusItem[] = [
     jabatan: "Penanggung Jawab SSR Sintang",
     cabang: "Kabupaten Sintang",
     foto: "https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?w=300",
-    kontak: "0821-5219-1199"
+    kontak: "+62 813-2042-0906"
   },
   {
     id: 702,
@@ -511,7 +515,7 @@ export const DEFAULT_PENGURUS: PengurusItem[] = [
     jabatan: "Pengelola 9 Puskesmas Hulu Kapuas",
     cabang: "Kabupaten Sintang",
     foto: "https://images.unsplash.com/photo-1501196354995-cbb51c65aaea?w=300",
-    kontak: "0821-5219-1199"
+    kontak: "+62 813-2042-0906"
   },
 
   // 8. KABUPATEN KETAPANG (SSR KETAPANG)
@@ -521,7 +525,7 @@ export const DEFAULT_PENGURUS: PengurusItem[] = [
     jabatan: "Penanggung Jawab SSR Ketapang",
     cabang: "Kabupaten Ketapang",
     foto: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=300",
-    kontak: "0821-5219-1199"
+    kontak: "+62 813-2042-0906"
   },
   {
     id: 802,
@@ -529,7 +533,7 @@ export const DEFAULT_PENGURUS: PengurusItem[] = [
     jabatan: "Pengelola 9 Puskesmas & RSUD Agoesdjam",
     cabang: "Kabupaten Ketapang",
     foto: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=300",
-    kontak: "0821-5219-1199"
+    kontak: "+62 813-2042-0906"
   }
 ];
 

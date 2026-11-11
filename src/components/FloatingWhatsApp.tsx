@@ -4,7 +4,7 @@ import { MessageSquareText } from 'lucide-react';
 
 export const FloatingWhatsApp: React.FC = () => {
   const { kontenWeb } = useFoundation();
-  const rawNumber = (kontenWeb.wa_number || '6281256789012').replace(/[^0-9]/g, '');
+  const rawNumber = (kontenWeb.wa_number || '6281320420906').replace(/[^0-9]/g, '');
   const greeting = encodeURIComponent(
     "Assalamu'alaikum Yayasan Bina Asri Kalimantan Barat, saya ingin berkonsultasi mengenai program dan donasi."
   );
