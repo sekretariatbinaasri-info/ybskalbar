@@ -1,0 +1,1620 @@
+import React, { createContext, useContext, useState, useEffect, ReactNode, useCallback } from 'react';
+import {
+  KontenWeb,
+  BeritaItem,
+  ProgramItem,
+  GaleriItem,
+  PengurusItem,
+  BankAccount,
+  PesanItem,
+  AdminSession,
+  AppUser
+} from '../types';
+import {
+  DEFAULT_KONTEN_WEB,
+  DEFAULT_BERITA,
+  DEFAULT_PROGRAM,
+  DEFAULT_GALERI,
+  DEFAULT_PENGURUS,
+  DEFAULT_BANKS,
+  DEFAULT_PESAN,
+  DEFAULT_USERS
+} from '../data/defaultData';
+import { getSupabaseClient, batchUploadToSupabase } from '../lib/supabase';
+
+export interface ToastMessage {
+  id: string;
+  text: string;
+  type: 'success' | 'error' | 'info';
+}
+
+interface FoundationContextType {
+  kontenWeb: KontenWeb;
+  berita: BeritaItem[];
+  program: ProgramItem[];
+  galeri: GaleriItem[];
+  pengurus: PengurusItem[];
+  banks: BankAccount[];
+  pesan: PesanItem[];
+  users: AppUser[];
+  adminSession: AdminSession | null;
+  directEditMode: boolean;
+  unsavedKeys: string[];
+  activeView: 'public' | 'dashboard';
+  dashboardTab: string;
+  toasts: ToastMessage[];
+
+  // Actions
+  setActiveView: (view: 'public' | 'dashboard') => void;
+  setDashboardTab: (tab: string) => void;
+  showToast: (text: string, type?: 'success' | 'error' | 'info') => void;
+  removeToast: (id: string) => void;
+  toggleDirectEditMode: () => void;
+  updateDirectField: (key: keyof KontenWeb, value: string) => void;
+  saveAllDirectChanges: () => Promise<void>;
+  dismissUnsavedChanges: () => void;
+  saveFullKonten: (newKonten: Partial<KontenWeb>) => Promise<void>;
+
+  // News CRUD
+  addBerita: (item: Omit<BeritaItem, 'id'>) => Promise<void>;
+  updateBerita: (item: BeritaItem) => Promise<void>;
+  deleteBerita: (id: number) => Promise<void>;
+
+  // Program CRUD
+  addProgram: (item: Omit<ProgramItem, 'id'>) => Promise<void>;
+  updateProgram: (item: ProgramItem) => Promise<void>;
+  deleteProgram: (id: number) => Promise<void>;
+
+  // Galeri CRUD
+  addGaleri: (item: Omit<GaleriItem, 'id'>) => Promise<void>;
+  deleteGaleri: (id: number) => Promise<void>;
+
+  // Pengurus CRUD
+  addPengurus: (item: Omit<PengurusItem, 'id'>) => Promise<void>;
+  updatePengurus: (item: PengurusItem) => Promise<void>;
+  deletePengurus: (id: number) => Promise<void>;
+  togglePengurusVisibility: (id: number) => Promise<void>;
+
+  // Banks CRUD
+  addBank: (item: Omit<BankAccount, 'id'>) => Promise<void>;
+  updateBank: (item: BankAccount) => Promise<void>;
+  deleteBank: (id: number) => Promise<void>;
+
+  // Messages
+  submitPesan: (form: { nama: string; email: string; telepon: string; subjek: string; pesan: string }) => Promise<boolean>;
+  deletePesan: (id: number) => Promise<void>;
+
+  // Users & Password Management (RBAC)
+  addUser: (user: Omit<AppUser, 'id' | 'createdAt'>) => Promise<{ success: boolean; message: string }>;
+  updateUser: (user: AppUser) => Promise<{ success: boolean; message: string }>;
+  deleteUser: (id: string) => Promise<{ success: boolean; message: string }>;
+  changePasswordForUser: (targetUsername: string, newPassword: string) => Promise<{ success: boolean; message: string }>;
+
+  // Auth
+  loginAdmin: (username: string, password: string) => Promise<{ success: boolean; message: string }>;
+  logoutAdmin: () => void;
+  changeAdminPassword: (oldPass: string, newPass: string) => Promise<{ success: boolean; message: string }>;
+
+  // System
+  exportDataJson: () => string;
+  importDataJson: (jsonStr: string) => Promise<{ success: boolean; message: string }>;
+  resetToDefaults: () => Promise<void>;
+  fetchCloudData: () => Promise<void>;
+  syncLocalToSupabaseClient: () => Promise<{ success: boolean; message: string; counts?: Record<string, number> }>;
+}
+
+const STORAGE_KEY = 'bina_asri_storage_v6_sr_kalbar';
+const ADMIN_SESSION_KEY = 'bina_asri_admin_session';
+
+const FoundationContext = createContext<FoundationContextType | undefined>(undefined);
+
+export const FoundationProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+  // 1. Initial State from Storage or Defaults
+  const [kontenWeb, setKontenWeb] = useState<KontenWeb>(() => {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (parsed.kontenWeb) {
+          const merged = { ...DEFAULT_KONTEN_WEB, ...parsed.kontenWeb };
+          if (merged.brand_sub && merged.brand_sub.toUpperCase().includes('PROVINSI')) {
+            merged.brand_sub = merged.brand_sub.replace(/PROVINSI\s*/gi, '').trim();
+          }
+          if (merged.footer_copyright && merged.footer_copyright.includes('Provinsi')) {
+            merged.footer_copyright = merged.footer_copyright.replace(/Provinsi\s*/gi, '').trim();
+          }
+          return merged;
+        }
+      }
+    } catch (e) {
+      console.warn('Storage read error', e);
+    }
+    return DEFAULT_KONTEN_WEB;
+  });
+
+  const [berita, setBerita] = useState<BeritaItem[]>(() => {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (Array.isArray(parsed.berita) && parsed.berita.length > 0) return parsed.berita;
+      }
+    } catch (e) {}
+    return DEFAULT_BERITA;
+  });
+
+  const [program, setProgram] = useState<ProgramItem[]>(() => {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (Array.isArray(parsed.program) && parsed.program.length > 0) return parsed.program;
+      }
+    } catch (e) {}
+    return DEFAULT_PROGRAM;
+  });
+
+  const [galeri, setGaleri] = useState<GaleriItem[]>(() => {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (Array.isArray(parsed.galeri) && parsed.galeri.length > 0) return parsed.galeri;
+      }
+    } catch (e) {}
+    return DEFAULT_GALERI;
+  });
+
+  const [pengurus, setPengurus] = useState<PengurusItem[]>(() => {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (Array.isArray(parsed.pengurus) && parsed.pengurus.length > 5) {
+          return parsed.pengurus.map((p: any) => ({
+            ...p,
+            cabang: p.cabang === 'Pusat / Wilayah Kalbar' ? 'Pusat / SR Kalbar' : (p.cabang || 'Pusat / SR Kalbar'),
+            tampil: p.tampil !== false,
+          }));
+        }
+      }
+    } catch (e) {}
+    return DEFAULT_PENGURUS;
+  });
+
+  const [banks, setBanks] = useState<BankAccount[]>(() => {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (Array.isArray(parsed.banks) && parsed.banks.length > 0) return parsed.banks;
+      }
+    } catch (e) {}
+    return DEFAULT_BANKS;
+  });
+
+  const [pesan, setPesan] = useState<PesanItem[]>(() => {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (Array.isArray(parsed.pesan) && parsed.pesan.length > 0) return parsed.pesan;
+      }
+    } catch (e) {}
+    return DEFAULT_PESAN;
+  });
+
+  const [users, setUsers] = useState<AppUser[]>(() => {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (Array.isArray(parsed.users) && parsed.users.length > 0) return parsed.users;
+      }
+    } catch (e) {}
+    return DEFAULT_USERS;
+  });
+
+  // Admin session
+  const [adminSession, setAdminSession] = useState<AdminSession | null>(() => {
+    try {
+      const saved = sessionStorage.getItem(ADMIN_SESSION_KEY);
+      if (saved) return JSON.parse(saved);
+    } catch (e) {}
+    return null;
+  });
+
+  // UI state
+  const [activeView, setActiveView] = useState<'public' | 'dashboard'>('public');
+  const [dashboardTab, setDashboardTab] = useState<string>('overview');
+  const [directEditMode, setDirectEditMode] = useState<boolean>(false);
+  const [unsavedKeys, setUnsavedKeys] = useState<string[]>([]);
+  const [toasts, setToasts] = useState<ToastMessage[]>([]);
+
+  // Toast helper
+  const showToast = useCallback((text: string, type: 'success' | 'error' | 'info' = 'success') => {
+    const id = Date.now().toString() + Math.random().toString(36).substring(2, 6);
+    setToasts((prev) => [...prev, { id, text, type }]);
+    setTimeout(() => {
+      setToasts((prev) => prev.filter((t) => t.id !== id));
+    }, 4000);
+  }, []);
+
+  const removeToast = (id: string) => {
+    setToasts((prev) => prev.filter((t) => t.id !== id));
+  };
+
+  // Sync / Fetch data from Cloud Database (Hybrid API + Supabase fallback)
+  const fetchCloudData = useCallback(async () => {
+    let loadedFromApi = false;
+
+    // 1. Try Express backend endpoint
+    try {
+      const res = await fetch('/api/bootstrap');
+      const contentType = res.headers.get('content-type') || '';
+      if (res.ok && contentType.includes('application/json')) {
+        const json = await res.json();
+        if (json.success && json.data) {
+          const d = json.data;
+          if (d.kontenWeb) {
+            const clean = { ...d.kontenWeb };
+            if (clean.brand_sub && clean.brand_sub.toUpperCase().includes('PROVINSI')) {
+              clean.brand_sub = clean.brand_sub.replace(/PROVINSI\s*/gi, '').trim();
+            }
+            if (clean.footer_copyright && clean.footer_copyright.includes('Provinsi')) {
+              clean.footer_copyright = clean.footer_copyright.replace(/Provinsi\s*/gi, '').trim();
+            }
+            setKontenWeb(clean);
+          }
+          if (Array.isArray(d.berita)) setBerita(d.berita);
+          if (Array.isArray(d.program)) setProgram(d.program);
+          if (Array.isArray(d.galeri)) setGaleri(d.galeri);
+          if (Array.isArray(d.pengurus)) setPengurus(d.pengurus);
+          if (Array.isArray(d.banks)) setBanks(d.banks);
+          if (Array.isArray(d.pesan)) setPesan(d.pesan);
+          loadedFromApi = true;
+        }
+      }
+
+      // Also fetch users from API
+      try {
+        const uRes = await fetch('/api/admin/users');
+        if (uRes.ok && uRes.headers.get('content-type')?.includes('application/json')) {
+          const uData = await uRes.json();
+          if (uData.success && Array.isArray(uData.users) && uData.users.length > 0) {
+            setUsers(uData.users);
+          }
+        }
+      } catch (e) {}
+    } catch (err) {
+      console.warn('API /api/bootstrap note: trying client-side resolution...', err);
+    }
+
+    // 2. If backend endpoint was not available (e.g., pure static Vercel build), connect directly to Supabase
+    if (!loadedFromApi) {
+      const supabase = getSupabaseClient();
+      if (supabase) {
+        try {
+          console.log('Connecting directly to Supabase PostgreSQL from browser client...');
+          const [resContent, resBerita, resProg, resGal, resPeng, resBanks, resPesan] = await Promise.all([
+            supabase.from('site_content').select('*'),
+            supabase.from('berita').select('*').order('id', { ascending: false }),
+            supabase.from('programs').select('*').order('id', { ascending: false }),
+            supabase.from('galeri').select('*').order('id', { ascending: false }),
+            supabase.from('pengurus').select('*').order('id', { ascending: true }),
+            supabase.from('banks').select('*').order('id', { ascending: true }),
+            supabase.from('pesan').select('*').order('id', { ascending: false }),
+          ]);
+
+          if (!resContent.error && resContent.data && resContent.data.length > 0) {
+            const map: Record<string, string> = {};
+            resContent.data.forEach((r: any) => { map[r.key] = r.value; });
+            if (map.brand_sub && map.brand_sub.toUpperCase().includes('PROVINSI')) {
+              map.brand_sub = map.brand_sub.replace(/PROVINSI\s*/gi, '').trim();
+            }
+            if (map.footer_copyright && map.footer_copyright.includes('Provinsi')) {
+              map.footer_copyright = map.footer_copyright.replace(/Provinsi\s*/gi, '').trim();
+            }
+            setKontenWeb((prev) => ({ ...prev, ...map }));
+          }
+          if (!resBerita.error && resBerita.data && resBerita.data.length > 0) {
+            setBerita(resBerita.data.map((r: any) => ({
+              id: Number(r.id),
+              judul: r.judul,
+              tanggal: r.tanggal,
+              rawTanggal: r.raw_tanggal || r.tanggal,
+              kategori: r.kategori,
+              ringkasan: r.ringkasan,
+              konten: r.konten,
+              gambar: r.gambar,
+            })));
+          }
+          if (!resProg.error && resProg.data && resProg.data.length > 0) {
+            setProgram(resProg.data.map((r: any) => ({
+              id: Number(r.id),
+              nama: r.nama,
+              deskripsi: r.deskripsi,
+              target: r.target,
+              progress: Number(r.progress) || 0,
+            })));
+          }
+          if (!resGal.error && resGal.data && resGal.data.length > 0) {
+            setGaleri(resGal.data.map((r: any) => ({
+              id: Number(r.id),
+              judul: r.judul,
+              gambar: r.gambar,
+            })));
+          }
+          if (!resPeng.error && resPeng.data && resPeng.data.length > 0) {
+            setPengurus(resPeng.data.map((r: any) => ({
+              id: Number(r.id),
+              nama: r.nama,
+              jabatan: r.jabatan,
+              foto: r.foto,
+              cabang: r.cabang === 'Pusat / Wilayah Kalbar' ? 'Pusat / SR Kalbar' : (r.cabang || 'Pusat / SR Kalbar'),
+              kontak: r.kontak || undefined,
+              tampil: r.tampil !== false,
+            })));
+          }
+          if (!resBanks.error && resBanks.data && resBanks.data.length > 0) {
+            setBanks(resBanks.data.map((r: any) => ({
+              id: Number(r.id),
+              bank: r.bank,
+              badge: r.badge,
+              norek: r.norek,
+              an: r.an,
+            })));
+          }
+          if (!resPesan.error && resPesan.data) {
+            setPesan(resPesan.data.map((r: any) => ({
+              id: Number(r.id),
+              timestamp: r.timestamp,
+              nama: r.nama,
+              email: r.email || '',
+              telepon: r.telepon,
+              subjek: r.subjek,
+              pesan: r.pesan,
+            })));
+          }
+
+          // Try fetching app_users if table exists
+          try {
+            const resUsers = await supabase.from('app_users').select('*').order('created_at', { ascending: true });
+            if (!resUsers.error && resUsers.data && resUsers.data.length > 0) {
+              setUsers(resUsers.data.map((r: any) => ({
+                id: String(r.id),
+                username: r.username,
+                password: r.password,
+                nama: r.nama,
+                role: r.role === 'superadmin' ? 'superadmin' : 'editor',
+                email: r.email || '',
+                status: r.status || 'active',
+                createdAt: r.created_at || new Date().toISOString(),
+                lastLogin: r.last_login,
+              })));
+            }
+          } catch (e) {}
+        } catch (supErr) {
+          console.warn('Client Supabase direct fetch error:', supErr);
+        }
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchCloudData();
+  }, [fetchCloudData]);
+
+  // Auto-sync entire state to localStorage for offline readiness
+  useEffect(() => {
+    try {
+      const payload = {
+        kontenWeb: { ...kontenWeb, donasi_banks: JSON.stringify(banks) },
+        berita,
+        program,
+        galeri,
+        pengurus,
+        banks,
+        pesan,
+        users
+      };
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+    } catch (e) {
+      console.error('Failed to sync to local storage', e);
+    }
+  }, [kontenWeb, berita, program, galeri, pengurus, banks, pesan, users]);
+
+  // Direct on-page editing mode
+  const toggleDirectEditMode = () => {
+    if (!adminSession) {
+      showToast('Harap login sebagai admin terlebih dahulu.', 'error');
+      return;
+    }
+    const next = !directEditMode;
+    setDirectEditMode(next);
+    if (next) {
+      showToast('Mode Edit Langsung AKTIF: Klik teks bertanda garis putus-putus untuk langsung mengedit!', 'info');
+    } else {
+      showToast('Mode Edit Langsung dinonaktifkan.', 'info');
+    }
+  };
+
+  const updateDirectField = (key: keyof KontenWeb, value: string) => {
+    setKontenWeb((prev) => ({ ...prev, [key]: value }));
+    setUnsavedKeys((prev) => (prev.includes(key) ? prev : [...prev, key]));
+  };
+
+  const saveAllDirectChanges = async () => {
+    const count = unsavedKeys.length;
+    const updates: Record<string, string> = {};
+    unsavedKeys.forEach((k) => {
+      updates[k] = (kontenWeb as any)[k] ?? '';
+    });
+
+    setUnsavedKeys([]);
+
+    let savedRemote = false;
+
+    // 1. Try Backend API
+    try {
+      const res = await fetch('/api/site-content', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ updates }),
+      });
+      const isJson = res.headers.get('content-type')?.includes('application/json');
+      if (res.ok && isJson) {
+        savedRemote = true;
+      }
+    } catch {}
+
+    // 2. Direct Supabase Fallback
+    const supabase = getSupabaseClient();
+    if (supabase) {
+      try {
+        const rows = Object.entries(updates).map(([key, value]) => ({
+          key,
+          value: String(value ?? ''),
+          updated_at: new Date().toISOString(),
+        }));
+        const { error } = await supabase.from('site_content').upsert(rows);
+        if (!error) savedRemote = true;
+      } catch (err) {
+        console.warn('Supabase direct direct-changes error:', err);
+      }
+    }
+
+    if (savedRemote) {
+      showToast(`Berhasil menyimpan ${count} perubahan teks ke Database!`, 'success');
+    } else {
+      showToast(`Perubahan tersimpan secara lokal di perangkat Anda.`, 'info');
+    }
+  };
+
+  const dismissUnsavedChanges = () => {
+    setUnsavedKeys([]);
+  };
+
+  const saveFullKonten = async (newKonten: Partial<KontenWeb>) => {
+    setKontenWeb((prev) => ({ ...prev, ...newKonten }));
+
+    let savedRemote = false;
+
+    // 1. Try Backend API
+    try {
+      const res = await fetch('/api/site-content', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ updates: newKonten }),
+      });
+      const isJson = res.headers.get('content-type')?.includes('application/json');
+      if (res.ok && isJson) {
+        savedRemote = true;
+      }
+    } catch {}
+
+    // 2. Direct Supabase Fallback
+    const supabase = getSupabaseClient();
+    if (supabase) {
+      try {
+        const rows = Object.entries(newKonten).map(([key, value]) => ({
+          key,
+          value: String(value ?? ''),
+          updated_at: new Date().toISOString(),
+        }));
+        const { error } = await supabase.from('site_content').upsert(rows);
+        if (!error) savedRemote = true;
+      } catch (err) {
+        console.warn('Supabase direct saveFullKonten error:', err);
+      }
+    }
+
+    if (savedRemote) {
+      showToast('Seluruh perubahan konten berhasil disimpan ke Database Cloud!', 'success');
+    } else {
+      showToast('Seluruh perubahan konten berhasil disimpan secara lokal!', 'success');
+    }
+  };
+
+  // News CRUD
+  const addBerita = async (item: Omit<BeritaItem, 'id'>) => {
+    const tempId = Date.now();
+    const d = item.rawTanggal ? new Date(item.rawTanggal) : new Date();
+    const formattedTanggal = item.tanggal || d.toLocaleDateString('id-ID', {
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric'
+    });
+    const tempItem: BeritaItem = {
+      ...item,
+      id: tempId,
+      tanggal: formattedTanggal
+    };
+    setBerita((prev) => [tempItem, ...prev]);
+
+    let savedRemote = false;
+
+    try {
+      const res = await fetch('/api/berita', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(tempItem),
+      });
+      const isJson = res.headers.get('content-type')?.includes('application/json');
+      if (res.ok && isJson) {
+        const json = await res.json();
+        if (json.all) setBerita(json.all);
+        savedRemote = true;
+      }
+    } catch {}
+
+    const supabase = getSupabaseClient();
+    if (supabase) {
+      try {
+        const { error } = await supabase.from('berita').insert({
+          id: tempItem.id,
+          judul: tempItem.judul,
+          tanggal: tempItem.tanggal,
+          raw_tanggal: tempItem.rawTanggal || tempItem.tanggal,
+          kategori: tempItem.kategori,
+          ringkasan: tempItem.ringkasan,
+          konten: tempItem.konten,
+          gambar: tempItem.gambar,
+        });
+        if (!error) savedRemote = true;
+      } catch (e) {
+        console.warn('Supabase direct addBerita note:', e);
+      }
+    }
+
+    showToast(
+      savedRemote
+        ? 'Berita baru berhasil dipublikasikan dan tersimpan di database!'
+        : 'Berita baru berhasil dipublikasikan secara lokal!',
+      'success'
+    );
+  };
+
+  const updateBerita = async (item: BeritaItem) => {
+    setBerita((prev) => prev.map((b) => (b.id === item.id ? item : b)));
+
+    let savedRemote = false;
+
+    try {
+      const res = await fetch(`/api/berita/${item.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(item),
+      });
+      const isJson = res.headers.get('content-type')?.includes('application/json');
+      if (res.ok && isJson) {
+        const json = await res.json();
+        if (json.all) setBerita(json.all);
+        savedRemote = true;
+      }
+    } catch {}
+
+    const supabase = getSupabaseClient();
+    if (supabase) {
+      try {
+        const { error } = await supabase.from('berita').update({
+          judul: item.judul,
+          tanggal: item.tanggal,
+          raw_tanggal: item.rawTanggal || item.tanggal,
+          kategori: item.kategori,
+          ringkasan: item.ringkasan,
+          konten: item.konten,
+          gambar: item.gambar,
+        }).eq('id', item.id);
+        if (!error) savedRemote = true;
+      } catch (e) {
+        console.warn('Supabase direct updateBerita note:', e);
+      }
+    }
+
+    showToast('Berita berhasil diperbarui!', 'success');
+  };
+
+  const deleteBerita = async (id: number) => {
+    setBerita((prev) => prev.filter((b) => b.id !== id));
+
+    try {
+      const res = await fetch(`/api/berita/${id}`, { method: 'DELETE' });
+      const isJson = res.headers.get('content-type')?.includes('application/json');
+      if (res.ok && isJson) {
+        const json = await res.json();
+        if (json.all) setBerita(json.all);
+      }
+    } catch {}
+
+    const supabase = getSupabaseClient();
+    if (supabase) {
+      try {
+        await supabase.from('berita').delete().eq('id', id);
+      } catch (e) {}
+    }
+
+    showToast('Berita berhasil dihapus!', 'success');
+  };
+
+  // Program CRUD
+  const addProgram = async (item: Omit<ProgramItem, 'id'>) => {
+    const tempItem: ProgramItem = {
+      ...item,
+      id: Date.now()
+    };
+    setProgram((prev) => [...prev, tempItem]);
+
+    try {
+      const res = await fetch('/api/programs', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(tempItem),
+      });
+      const isJson = res.headers.get('content-type')?.includes('application/json');
+      if (res.ok && isJson) {
+        const json = await res.json();
+        if (json.all) setProgram(json.all);
+      }
+    } catch {}
+
+    const supabase = getSupabaseClient();
+    if (supabase) {
+      try {
+        await supabase.from('programs').insert({
+          id: tempItem.id,
+          nama: tempItem.nama,
+          deskripsi: tempItem.deskripsi,
+          target: tempItem.target,
+          progress: tempItem.progress,
+        });
+      } catch (e) {}
+    }
+
+    showToast('Program kerja berhasil disimpan!', 'success');
+  };
+
+  const updateProgram = async (item: ProgramItem) => {
+    setProgram((prev) => prev.map((p) => (p.id === item.id ? item : p)));
+
+    try {
+      const res = await fetch(`/api/programs/${item.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(item),
+      });
+      const isJson = res.headers.get('content-type')?.includes('application/json');
+      if (res.ok && isJson) {
+        const json = await res.json();
+        if (json.all) setProgram(json.all);
+      }
+    } catch {}
+
+    const supabase = getSupabaseClient();
+    if (supabase) {
+      try {
+        await supabase.from('programs').update({
+          nama: item.nama,
+          deskripsi: item.deskripsi,
+          target: item.target,
+          progress: item.progress,
+        }).eq('id', item.id);
+      } catch (e) {}
+    }
+
+    showToast('Program berhasil diperbarui!', 'success');
+  };
+
+  const deleteProgram = async (id: number) => {
+    setProgram((prev) => prev.filter((p) => p.id !== id));
+
+    try {
+      const res = await fetch(`/api/programs/${id}`, { method: 'DELETE' });
+      const isJson = res.headers.get('content-type')?.includes('application/json');
+      if (res.ok && isJson) {
+        const json = await res.json();
+        if (json.all) setProgram(json.all);
+      }
+    } catch {}
+
+    const supabase = getSupabaseClient();
+    if (supabase) {
+      try {
+        await supabase.from('programs').delete().eq('id', id);
+      } catch (e) {}
+    }
+
+    showToast('Program berhasil dihapus!', 'success');
+  };
+
+  // Galeri CRUD
+  const addGaleri = async (item: Omit<GaleriItem, 'id'>) => {
+    const tempItem: GaleriItem = {
+      ...item,
+      id: Date.now()
+    };
+    setGaleri((prev) => [tempItem, ...prev]);
+
+    try {
+      const res = await fetch('/api/galeri', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(tempItem),
+      });
+      const isJson = res.headers.get('content-type')?.includes('application/json');
+      if (res.ok && isJson) {
+        const json = await res.json();
+        if (json.all) setGaleri(json.all);
+      }
+    } catch {}
+
+    const supabase = getSupabaseClient();
+    if (supabase) {
+      try {
+        await supabase.from('galeri').insert({
+          id: tempItem.id,
+          judul: tempItem.judul,
+          gambar: tempItem.gambar,
+        });
+      } catch (e) {}
+    }
+
+    showToast('Foto dokumentasi berhasil disimpan!', 'success');
+  };
+
+  const deleteGaleri = async (id: number) => {
+    setGaleri((prev) => prev.filter((g) => g.id !== id));
+
+    try {
+      const res = await fetch(`/api/galeri/${id}`, { method: 'DELETE' });
+      const isJson = res.headers.get('content-type')?.includes('application/json');
+      if (res.ok && isJson) {
+        const json = await res.json();
+        if (json.all) setGaleri(json.all);
+      }
+    } catch {}
+
+    const supabase = getSupabaseClient();
+    if (supabase) {
+      try {
+        await supabase.from('galeri').delete().eq('id', id);
+      } catch (e) {}
+    }
+
+    showToast('Foto galeri berhasil dihapus!', 'success');
+  };
+
+  // Pengurus CRUD
+  const addPengurus = async (item: Omit<PengurusItem, 'id'>) => {
+    const tempItem: PengurusItem = {
+      ...item,
+      id: Date.now(),
+      tampil: item.tampil !== false,
+    };
+    setPengurus((prev) => [...prev, tempItem]);
+
+    try {
+      const res = await fetch('/api/pengurus', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(tempItem),
+      });
+      const isJson = res.headers.get('content-type')?.includes('application/json');
+      if (res.ok && isJson) {
+        const json = await res.json();
+        if (json.all) setPengurus(json.all);
+      }
+    } catch {}
+
+    const supabase = getSupabaseClient();
+    if (supabase) {
+      try {
+        await supabase.from('pengurus').insert({
+          id: tempItem.id,
+          nama: tempItem.nama,
+          jabatan: tempItem.jabatan,
+          foto: tempItem.foto,
+          cabang: tempItem.cabang,
+          kontak: tempItem.kontak || '',
+          tampil: tempItem.tampil !== false,
+        });
+      } catch (e) {}
+    }
+
+    showToast('Data pengurus berhasil ditambahkan!', 'success');
+  };
+
+  const updatePengurus = async (item: PengurusItem) => {
+    const sanitizedItem = { ...item, tampil: item.tampil !== false };
+    setPengurus((prev) => prev.map((p) => (p.id === item.id ? sanitizedItem : p)));
+
+    try {
+      const res = await fetch(`/api/pengurus/${item.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(sanitizedItem),
+      });
+      const isJson = res.headers.get('content-type')?.includes('application/json');
+      if (res.ok && isJson) {
+        const json = await res.json();
+        if (json.all) setPengurus(json.all);
+      }
+    } catch {}
+
+    const supabase = getSupabaseClient();
+    if (supabase) {
+      try {
+        await supabase.from('pengurus').update({
+          nama: sanitizedItem.nama,
+          jabatan: sanitizedItem.jabatan,
+          foto: sanitizedItem.foto,
+          cabang: sanitizedItem.cabang,
+          kontak: sanitizedItem.kontak || '',
+          tampil: sanitizedItem.tampil !== false,
+        }).eq('id', item.id);
+      } catch (e) {}
+    }
+
+    showToast('Data pengurus berhasil diperbarui!', 'success');
+  };
+
+  const togglePengurusVisibility = async (id: number) => {
+    const target = pengurus.find((p) => p.id === id);
+    if (!target) return;
+    const currentStatus = target.tampil !== false;
+    const newStatus = !currentStatus;
+    const updated: PengurusItem = {
+      ...target,
+      tampil: newStatus,
+    };
+    await updatePengurus(updated);
+    showToast(
+      newStatus
+        ? `✅ Profil "${target.nama}" sekarang TAMPIL di website.`
+        : `👁️ Profil "${target.nama}" sekarang DISEMBUNYIKAN dari website publik.`,
+      newStatus ? 'success' : 'info'
+    );
+  };
+
+  const deletePengurus = async (id: number) => {
+    setPengurus((prev) => prev.filter((p) => p.id !== id));
+
+    try {
+      const res = await fetch(`/api/pengurus/${id}`, { method: 'DELETE' });
+      const isJson = res.headers.get('content-type')?.includes('application/json');
+      if (res.ok && isJson) {
+        const json = await res.json();
+        if (json.all) setPengurus(json.all);
+      }
+    } catch {}
+
+    const supabase = getSupabaseClient();
+    if (supabase) {
+      try {
+        await supabase.from('pengurus').delete().eq('id', id);
+      } catch (e) {}
+    }
+
+    showToast('Data pengurus berhasil dihapus!', 'success');
+  };
+
+  // Bank CRUD
+  const addBank = async (item: Omit<BankAccount, 'id'>) => {
+    const tempItem: BankAccount = {
+      ...item,
+      id: Date.now()
+    };
+    const next = [...banks, tempItem];
+    setBanks(next);
+
+    try {
+      const res = await fetch('/api/banks', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(tempItem),
+      });
+      const isJson = res.headers.get('content-type')?.includes('application/json');
+      if (res.ok && isJson) {
+        const json = await res.json();
+        if (json.all) setBanks(json.all);
+      }
+    } catch {}
+
+    const supabase = getSupabaseClient();
+    if (supabase) {
+      try {
+        await supabase.from('banks').insert({
+          id: tempItem.id,
+          bank: tempItem.bank,
+          badge: tempItem.badge,
+          norek: tempItem.norek,
+          an: tempItem.an,
+        });
+      } catch (e) {}
+    }
+
+    showToast('Rekening bank baru berhasil disimpan!', 'success');
+  };
+
+  const updateBank = async (item: BankAccount) => {
+    const next = banks.map((b) => (b.id === item.id ? item : b));
+    setBanks(next);
+
+    try {
+      const res = await fetch(`/api/banks/${item.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(item),
+      });
+      const isJson = res.headers.get('content-type')?.includes('application/json');
+      if (res.ok && isJson) {
+        const json = await res.json();
+        if (json.all) setBanks(json.all);
+      }
+    } catch {}
+
+    const supabase = getSupabaseClient();
+    if (supabase) {
+      try {
+        await supabase.from('banks').update({
+          bank: item.bank,
+          badge: item.badge,
+          norek: item.norek,
+          an: item.an,
+        }).eq('id', item.id);
+      } catch (e) {}
+    }
+
+    showToast('Rekening bank berhasil diperbarui!', 'success');
+  };
+
+  const deleteBank = async (id: number) => {
+    const next = banks.filter((b) => b.id !== id);
+    setBanks(next);
+
+    try {
+      const res = await fetch(`/api/banks/${id}`, { method: 'DELETE' });
+      const isJson = res.headers.get('content-type')?.includes('application/json');
+      if (res.ok && isJson) {
+        const json = await res.json();
+        if (json.all) setBanks(json.all);
+      }
+    } catch {}
+
+    const supabase = getSupabaseClient();
+    if (supabase) {
+      try {
+        await supabase.from('banks').delete().eq('id', id);
+      } catch (e) {}
+    }
+
+    showToast('Rekening bank telah dihapus!', 'success');
+  };
+
+  // Messages
+  const submitPesan = async (form: { nama: string; email: string; telepon: string; subjek: string; pesan: string }) => {
+    const now = new Date();
+    const timestamp = now.toLocaleDateString('id-ID', {
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    }) + ' WIB';
+
+    const newItem: PesanItem = {
+      id: Date.now(),
+      timestamp,
+      nama: form.nama.trim(),
+      email: form.email.trim(),
+      telepon: form.telepon.trim(),
+      subjek: form.subjek,
+      pesan: form.pesan.trim()
+    };
+
+    setPesan((prev) => [newItem, ...prev]);
+
+    try {
+      const res = await fetch('/api/pesan', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newItem),
+      });
+      const isJson = res.headers.get('content-type')?.includes('application/json');
+      if (res.ok && isJson) {
+        const json = await res.json();
+        if (json.all) setPesan(json.all);
+      }
+    } catch {}
+
+    const supabase = getSupabaseClient();
+    if (supabase) {
+      try {
+        await supabase.from('pesan').insert({
+          id: newItem.id,
+          timestamp: newItem.timestamp,
+          nama: newItem.nama,
+          email: newItem.email || '',
+          telepon: newItem.telepon,
+          subjek: newItem.subjek,
+          pesan: newItem.pesan,
+        });
+      } catch (e) {}
+    }
+
+    showToast('Pesan Anda berhasil dikirim dan tersimpan!', 'success');
+    return true;
+  };
+
+  const deletePesan = async (id: number) => {
+    setPesan((prev) => prev.filter((m) => m.id !== id));
+
+    try {
+      const res = await fetch(`/api/pesan/${id}`, { method: 'DELETE' });
+      const isJson = res.headers.get('content-type')?.includes('application/json');
+      if (res.ok && isJson) {
+        const json = await res.json();
+        if (json.all) setPesan(json.all);
+      }
+    } catch {}
+
+    const supabase = getSupabaseClient();
+    if (supabase) {
+      try {
+        await supabase.from('pesan').delete().eq('id', id);
+      } catch (e) {}
+    }
+
+    showToast('Pesan dihapus dari kotak masuk.', 'success');
+  };
+
+  // User Management (RBAC)
+  const addUser = async (userData: Omit<AppUser, 'id' | 'createdAt'>): Promise<{ success: boolean; message: string }> => {
+    const usernameClean = userData.username.trim().toLowerCase();
+    const existing = users.find((u) => u.username.toLowerCase() === usernameClean);
+    if (existing) {
+      return { success: false, message: `Username "${userData.username}" sudah digunakan!` };
+    }
+
+    const newUser: AppUser = {
+      ...userData,
+      id: 'usr_' + Date.now(),
+      username: usernameClean,
+      password: userData.password.trim(),
+      nama: userData.nama.trim(),
+      role: userData.role === 'superadmin' ? 'superadmin' : 'editor',
+      status: userData.status || 'active',
+      createdAt: new Date().toISOString().split('T')[0],
+    };
+
+    setUsers((prev) => [...prev, newUser]);
+
+    // Try API
+    try {
+      const res = await fetch('/api/admin/users', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(userData),
+      });
+      const isJson = res.headers.get('content-type')?.includes('application/json');
+      if (res.ok && isJson) {
+        const json = await res.json();
+        if (json.all) setUsers(json.all);
+      }
+    } catch {}
+
+    // Direct Supabase
+    const supabase = getSupabaseClient();
+    if (supabase) {
+      try {
+        await supabase.from('app_users').insert({
+          id: newUser.id,
+          username: newUser.username,
+          password: newUser.password,
+          nama: newUser.nama,
+          role: newUser.role,
+          email: newUser.email || '',
+          status: newUser.status,
+          created_at: newUser.createdAt,
+        });
+      } catch (e) {}
+    }
+
+    showToast(`Pengguna "${newUser.nama}" (${newUser.role === 'superadmin' ? 'Super Admin' : 'Editor'}) berhasil ditambahkan!`, 'success');
+    return { success: true, message: 'Pengguna berhasil ditambahkan!' };
+  };
+
+  const updateUser = async (userData: AppUser): Promise<{ success: boolean; message: string }> => {
+    const usernameClean = userData.username.trim().toLowerCase();
+    const dup = users.find((u) => u.id !== userData.id && u.username.toLowerCase() === usernameClean);
+    if (dup) {
+      return { success: false, message: `Username "${userData.username}" sudah digunakan pengguna lain!` };
+    }
+
+    setUsers((prev) => prev.map((u) => (u.id === userData.id ? { ...u, ...userData, username: usernameClean } : u)));
+
+    // Try API
+    try {
+      const res = await fetch(`/api/admin/users/${userData.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(userData),
+      });
+      const isJson = res.headers.get('content-type')?.includes('application/json');
+      if (res.ok && isJson) {
+        const json = await res.json();
+        if (json.all) setUsers(json.all);
+      }
+    } catch {}
+
+    // Direct Supabase
+    const supabase = getSupabaseClient();
+    if (supabase) {
+      try {
+        await supabase.from('app_users').update({
+          username: usernameClean,
+          nama: userData.nama,
+          role: userData.role,
+          email: userData.email || '',
+          status: userData.status,
+          password: userData.password,
+        }).eq('id', userData.id);
+      } catch (e) {}
+    }
+
+    showToast(`Data pengguna "${userData.nama}" berhasil diperbarui!`, 'success');
+    return { success: true, message: 'Data pengguna diperbarui!' };
+  };
+
+  const deleteUser = async (id: string): Promise<{ success: boolean; message: string }> => {
+    const target = users.find((u) => u.id === id);
+    if (!target) return { success: false, message: 'Pengguna tidak ditemukan.' };
+
+    const superadmins = users.filter((u) => u.role === 'superadmin');
+    if (target.role === 'superadmin' && superadmins.length <= 1) {
+      return { success: false, message: 'Tidak dapat menghapus satu-satunya Super Admin!' };
+    }
+
+    setUsers((prev) => prev.filter((u) => u.id !== id));
+
+    // Try API
+    try {
+      const res = await fetch(`/api/admin/users/${id}`, { method: 'DELETE' });
+      const isJson = res.headers.get('content-type')?.includes('application/json');
+      if (res.ok && isJson) {
+        const json = await res.json();
+        if (json.all) setUsers(json.all);
+      }
+    } catch {}
+
+    // Direct Supabase
+    const supabase = getSupabaseClient();
+    if (supabase) {
+      try {
+        await supabase.from('app_users').delete().eq('id', id);
+      } catch (e) {}
+    }
+
+    showToast(`Pengguna "${target.nama}" telah dihapus.`, 'info');
+    return { success: true, message: 'Pengguna telah dihapus.' };
+  };
+
+  const changePasswordForUser = async (targetUsername: string, newPassword: string): Promise<{ success: boolean; message: string }> => {
+    const uClean = targetUsername.trim().toLowerCase();
+    
+    // Update local state
+    setUsers((prev) =>
+      prev.map((u) => (u.username.toLowerCase() === uClean ? { ...u, password: newPassword.trim() } : u))
+    );
+
+    // Try API
+    try {
+      const res = await fetch('/api/admin/change-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: uClean, newPass: newPassword.trim(), isSuperAdmin: true }),
+      });
+      const isJson = res.headers.get('content-type')?.includes('application/json');
+      if (res.ok && isJson) {
+        const json = await res.json();
+        if (json.success) {
+          showToast(`Password untuk user "${targetUsername}" berhasil diperbarui!`, 'success');
+          return { success: true, message: json.message };
+        }
+      }
+    } catch {}
+
+    // Direct Supabase
+    const supabase = getSupabaseClient();
+    if (supabase) {
+      try {
+        await supabase.from('app_users').update({ password: newPassword.trim() }).eq('username', uClean);
+        if (uClean === 'admin') {
+          await supabase.from('admin_settings').upsert({
+            key: 'admin_password',
+            value: newPassword.trim(),
+            updated_at: new Date().toISOString(),
+          });
+        }
+      } catch (e) {}
+    }
+
+    showToast(`Password untuk user "${targetUsername}" berhasil diperbarui!`, 'success');
+    return { success: true, message: 'Password pengguna berhasil diperbarui!' };
+  };
+
+  // Auth
+  const loginAdmin = async (username: string, password: string) => {
+    const u = username.trim().toLowerCase();
+    const p = password.trim();
+
+    // 1. Try server endpoint
+    try {
+      const res = await fetch('/api/admin/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: u, password: p }),
+      });
+      const isJson = res.headers.get('content-type')?.includes('application/json');
+      if (res.ok && isJson) {
+        const data = await res.json();
+        if (data.success) {
+          const session: AdminSession = {
+            user: data.user,
+            token: data.token,
+            loginTime: data.loginTime,
+          };
+          setAdminSession(session);
+          sessionStorage.setItem(ADMIN_SESSION_KEY, JSON.stringify(session));
+          showToast(`Selamat datang, ${data.user.nama}! (${data.user.role === 'superadmin' ? 'Super Admin' : 'Editor Konten'})`, 'success');
+          return { success: true, message: 'Login berhasil!' };
+        }
+      }
+    } catch {}
+
+    // 2. Direct Supabase credential check
+    const supabase = getSupabaseClient();
+    if (supabase) {
+      try {
+        const { data: suUser, error: suErr } = await supabase.from('app_users').select('*').eq('username', u).maybeSingle();
+        if (!suErr && suUser && suUser.password === p) {
+          if (suUser.status === 'inactive') {
+            return { success: false, message: 'Akun Anda dinonaktifkan. Hubungi Super Administrator.' };
+          }
+          const session: AdminSession = {
+            user: {
+              id: String(suUser.id),
+              username: suUser.username,
+              nama: suUser.nama,
+              role: suUser.role === 'superadmin' ? 'superadmin' : 'editor',
+              email: suUser.email || '',
+            },
+            token: 'token_' + Date.now(),
+            loginTime: new Date().toLocaleString('id-ID'),
+          };
+          setAdminSession(session);
+          sessionStorage.setItem(ADMIN_SESSION_KEY, JSON.stringify(session));
+          showToast(`Login berhasil! Selamat datang, ${suUser.nama}`, 'success');
+          return { success: true, message: 'Login berhasil!' };
+        }
+      } catch (e) {}
+    }
+
+    // 3. Check local users array
+    const matchedUser = users.find((user) => user.username.toLowerCase() === u);
+    if (matchedUser) {
+      if (matchedUser.status === 'inactive') {
+        return { success: false, message: 'Akun ini dinonaktifkan. Hubungi Super Administrator.' };
+      }
+      if (matchedUser.password === p) {
+        const session: AdminSession = {
+          user: {
+            id: matchedUser.id,
+            username: matchedUser.username,
+            nama: matchedUser.nama,
+            role: matchedUser.role,
+            email: matchedUser.email || '',
+          },
+          token: 'token_' + Date.now(),
+          loginTime: new Date().toLocaleString('id-ID'),
+        };
+        setAdminSession(session);
+        sessionStorage.setItem(ADMIN_SESSION_KEY, JSON.stringify(session));
+        showToast(`Login berhasil! Selamat datang, ${matchedUser.nama}`, 'success');
+        return { success: true, message: 'Login berhasil!' };
+      }
+    }
+
+    // 4. Legacy admin fallback
+    let expectedPass = 'admin123';
+    if (supabase) {
+      try {
+        const { data } = await supabase.from('admin_settings').select('value').eq('key', 'admin_password').maybeSingle();
+        if (data && data.value) {
+          expectedPass = data.value;
+        }
+      } catch {}
+    }
+
+    if ((u === 'admin' || u === 'yayasan') && p === expectedPass) {
+      const session: AdminSession = {
+        user: {
+          id: 'usr_superadmin_01',
+          username: u,
+          nama: 'Super Administrator Yayasan',
+          role: 'superadmin',
+        },
+        token: 'token_' + Date.now(),
+        loginTime: new Date().toISOString(),
+      };
+      setAdminSession(session);
+      sessionStorage.setItem(ADMIN_SESSION_KEY, JSON.stringify(session));
+      showToast('Login berhasil sebagai Super Admin!', 'success');
+      return { success: true, message: 'Login berhasil!' };
+    }
+
+    return { success: false, message: 'Username atau Password salah!' };
+  };
+
+  const logoutAdmin = () => {
+    setAdminSession(null);
+    setDirectEditMode(false);
+    setActiveView('public');
+    sessionStorage.removeItem(ADMIN_SESSION_KEY);
+    showToast('Anda telah logout dari Sistem Admin.', 'info');
+  };
+
+  const changeAdminPassword = async (oldPass: string, newPass: string) => {
+    const currentUsername = adminSession?.user.username || 'admin';
+    const isSuperAdmin = adminSession?.user.role === 'superadmin';
+
+    // Verify old password against local users state if available
+    const currentUser = users.find((u) => u.username.toLowerCase() === currentUsername.toLowerCase());
+    if (currentUser && currentUser.password !== oldPass) {
+      return { success: false, message: 'Password saat ini tidak cocok!' };
+    }
+
+    let success = false;
+    let message = 'Gagal mengubah password';
+
+    // 1. Try server endpoint
+    try {
+      const res = await fetch('/api/admin/change-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: currentUsername, oldPass, newPass, isSuperAdmin }),
+      });
+      const isJson = res.headers.get('content-type')?.includes('application/json');
+      if (res.ok && isJson) {
+        const data = await res.json();
+        if (data.success) {
+          success = true;
+          message = data.message;
+        }
+      }
+    } catch {}
+
+    // 2. Direct Supabase Fallback
+    const supabase = getSupabaseClient();
+    if (supabase) {
+      try {
+        await supabase.from('app_users').update({ password: newPass }).eq('username', currentUsername);
+        if (currentUsername === 'admin' || isSuperAdmin) {
+          await supabase.from('admin_settings').upsert({
+            key: 'admin_password',
+            value: newPass,
+            updated_at: new Date().toISOString(),
+          });
+        }
+        success = true;
+        message = 'Kata sandi berhasil diperbarui di database!';
+      } catch (e: any) {
+        console.warn('Supabase password change note:', e);
+      }
+    }
+
+    // Update local state
+    setUsers((prev) =>
+      prev.map((u) => (u.username.toLowerCase() === currentUsername.toLowerCase() ? { ...u, password: newPass } : u))
+    );
+    success = true;
+
+    showToast('Password Anda berhasil diperbarui!', 'success');
+    return { success: true, message: 'Password berhasil diperbarui!' };
+  };
+
+  // Client-side full sync to Supabase using batch chunks and Promise.allSettled
+  const syncLocalToSupabaseClient = async (): Promise<{
+    success: boolean;
+    message: string;
+    counts?: Record<string, number>;
+  }> => {
+    const supabase = getSupabaseClient();
+    if (!supabase) {
+      return {
+        success: false,
+        message: 'Klien Supabase belum dikonfigurasi. Harap masukkan SUPABASE_URL dan API Key terlebih dahulu.',
+      };
+    }
+
+    try {
+      const syncResult = await batchUploadToSupabase(supabase, {
+        kontenWeb,
+        berita,
+        program,
+        galeri,
+        pengurus,
+        banks,
+        pesan,
+        users,
+      });
+
+      return {
+        success: syncResult.success,
+        message: syncResult.message,
+        counts: syncResult.counts,
+      };
+    } catch (err: any) {
+      const msg = err.message || '';
+      const isFetchErr = msg.includes('fetch') || msg.includes('network');
+      return {
+        success: false,
+        message: isFetchErr
+          ? 'Koneksi ke Supabase gagal (Failed to fetch). Kemungkinan besar proyek Supabase Anda sedang PAUSED (Tertidur) di dashboard Supabase atau URL salah.'
+          : (msg || 'Gagal sinkronisasi ke Supabase'),
+      };
+    }
+  };
+
+  // System Backup / Restore
+  const exportDataJson = () => {
+    const fullData = {
+      version: '2.0',
+      database: 'Supabase PostgreSQL & Local Cache',
+      exportedAt: new Date().toISOString(),
+      kontenWeb,
+      berita,
+      program,
+      galeri,
+      pengurus,
+      banks,
+      pesan,
+      users
+    };
+    return JSON.stringify(fullData, null, 2);
+  };
+
+  const importDataJson = async (jsonStr: string) => {
+    try {
+      const parsed = JSON.parse(jsonStr);
+      if (parsed.kontenWeb) {
+        setKontenWeb({ ...DEFAULT_KONTEN_WEB, ...parsed.kontenWeb });
+        await saveFullKonten(parsed.kontenWeb);
+      }
+      if (Array.isArray(parsed.berita)) setBerita(parsed.berita);
+      if (Array.isArray(parsed.program)) setProgram(parsed.program);
+      if (Array.isArray(parsed.galeri)) setGaleri(parsed.galeri);
+      if (Array.isArray(parsed.pengurus)) setPengurus(parsed.pengurus);
+      if (Array.isArray(parsed.banks)) setBanks(parsed.banks);
+      if (Array.isArray(parsed.pesan)) setPesan(parsed.pesan);
+      showToast('Seluruh data berhasil dipulihkan dan disinkronkan!', 'success');
+      return { success: true, message: 'Data cadangan berhasil diimpor.' };
+    } catch (e: any) {
+      showToast('Gagal mengimpor file: format data tidak valid.', 'error');
+      return { success: false, message: e.message || 'Format tidak valid' };
+    }
+  };
+
+  const resetToDefaults = async () => {
+    setKontenWeb(DEFAULT_KONTEN_WEB);
+    setBerita(DEFAULT_BERITA);
+    setProgram(DEFAULT_PROGRAM);
+    setGaleri(DEFAULT_GALERI);
+    setPengurus(DEFAULT_PENGURUS);
+    setBanks(DEFAULT_BANKS);
+    setPesan(DEFAULT_PESAN);
+    localStorage.removeItem(STORAGE_KEY);
+
+    try {
+      await fetch('/api/admin/reset', { method: 'POST' });
+    } catch {}
+
+    const supabase = getSupabaseClient();
+    if (supabase) {
+      try {
+        await syncLocalToSupabaseClient();
+      } catch (err) {
+        console.warn('Supabase reset sync notice:', err);
+      }
+    }
+
+    showToast('Seluruh data website berhasil dikembalikan ke pengaturan bawaan.', 'info');
+  };
+
+  return (
+    <FoundationContext.Provider
+      value={{
+        kontenWeb,
+        berita,
+        program,
+        galeri,
+        pengurus,
+        banks,
+        pesan,
+        users,
+        adminSession,
+        directEditMode,
+        unsavedKeys,
+        activeView,
+        dashboardTab,
+        toasts,
+        setActiveView,
+        setDashboardTab,
+        showToast,
+        removeToast,
+        toggleDirectEditMode,
+        updateDirectField,
+        saveAllDirectChanges,
+        dismissUnsavedChanges,
+        saveFullKonten,
+        addBerita,
+        updateBerita,
+        deleteBerita,
+        addProgram,
+        updateProgram,
+        deleteProgram,
+        addGaleri,
+        deleteGaleri,
+        addPengurus,
+        updatePengurus,
+        deletePengurus,
+        togglePengurusVisibility,
+        addBank,
+        updateBank,
+        deleteBank,
+        submitPesan,
+        deletePesan,
+        addUser,
+        updateUser,
+        deleteUser,
+        changePasswordForUser,
+        loginAdmin,
+        logoutAdmin,
+        changeAdminPassword,
+        exportDataJson,
+        importDataJson,
+        resetToDefaults,
+        fetchCloudData,
+        syncLocalToSupabaseClient,
+      }}
+    >
+      {children}
+    </FoundationContext.Provider>
+  );
+};
+
+export const useFoundation = () => {
+  const ctx = useContext(FoundationContext);
+  if (!ctx) throw new Error('useFoundation must be used within FoundationProvider');
+  return ctx;
+};

@@ -1,0 +1,8 @@
+{
+  "name": "Yayasan Bina Asri",
+  "description": "Lembaga kesehatan, kemanusiaan, keagamaan, dan sosial yang berfokus pada penanggulangan Tuberkulosis (TBC), Stunting, dan Kesehatan Reproduksi untuk mewujudkan masyarakat Kalimantan Barat yang sehat, sejahtera, dan bermartabat menuju Indonesia Bebas TBC 2030",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
